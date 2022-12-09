@@ -81,6 +81,7 @@ TSharedPtr<FSLOwlExperiment> FSLOwlExperimentStatics::CreateDefaultExperiment(
 	Experiment->AddClassDefinition("knowrob", "ReachingForSomething");
 	Experiment->AddClassDefinition("knowrob", "SlidingSituation");
 	Experiment->AddClassDefinition("knowrob", "TransportingSituation");
+	Experiment->AddClassDefinition("knowrob", "PouringSituation");
 
 
 	// Add individuals comment

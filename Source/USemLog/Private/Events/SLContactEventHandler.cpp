@@ -7,6 +7,7 @@
 #include "Events/SLSupportedByEvent.h"
 #include "Individuals/Type/SLBaseIndividual.h"
 #include "Utils/SLUuid.h"
+#include "Individuals/Type/SLParticleIndividual.h"
 
 
 // Set parent
@@ -78,6 +79,9 @@ void FSLContactEventHandler::AddNewContactEvent(const FSLContactResult& InResult
 	Event->EpisodeId = EpisodeId;
 	// Add event to the pending contacts array
 	StartedContactEvents.Emplace(Event);
+
+	// Start a semantic Pouring event, if particles are involved in contact
+	AddNewPouringEvent(InResult);
 }
 
 // Publish finished event
@@ -86,6 +90,7 @@ bool FSLContactEventHandler::FinishContactEvent(USLBaseIndividual* InOther, floa
 	// Use iterator to be able to remove the entry from the array
 	for (auto EventItr(StartedContactEvents.CreateIterator()); EventItr; ++EventItr)
 	{
+		PouringEndTime = EndTime;
 		// It is enough to compare against the other id when searching
 		if ((*EventItr)->Individual2 == InOther)
 		{
@@ -98,8 +103,20 @@ bool FSLContactEventHandler::FinishContactEvent(USLBaseIndividual* InOther, floa
 				OnSemanticEvent.ExecuteIfBound(*EventItr);
 			}
 			
+			// find out how many particles are ending overlap with source container
+			if ((*EventItr)->Individual2->GetClass() == USLParticleIndividual::StaticClass()) {
+				particlesOverlapEnded = particlesOverlapEnded + 1;
+				UE_LOG(LogTemp, Warning, TEXT("%d total particles overlapped.."),
+					particlesOverlapEnded);
+			}
+
 			// Remove event from the pending list
 			EventItr.RemoveCurrent();
+
+			// if for the last contact event, the end time is the pouring endtime
+			if (PouringEndTime < EndTime) {
+				PouringEndTime = EndTime;
+			}
 
 			return true;
 		}
@@ -170,6 +187,66 @@ void FSLContactEventHandler::FinishAllEvents(float EndTime)
 		}
 	}
 	StartedSupportedByEvents.Empty();
+
+	// Finish pouring events
+	for (auto& Ev : StartedPouringEvents)
+	{
+		// Ignore short events
+		if (PouringEndTime - Ev->StartTime > PouringEventMin)
+		{
+			// Set end time and publish event
+			Ev->EndTime = PouringEndTime;
+			OnSemanticEvent.ExecuteIfBound(Ev);
+		}
+	}
+	StartedPouringEvents.Empty();
+}
+
+// Start new Pouring event
+void FSLContactEventHandler::AddNewPouringEvent(const FSLContactResult& InResult)
+{
+	// Start a semantic Pouring event
+
+	// TODO: gather how many particles show up.. then compare them with two different types of containers..
+
+	if (InResult.Other->GetClass() == USLParticleIndividual::StaticClass() && StartedPouringEvents.Num() == 0) {
+		// if there is already CurrPouredIndividual object then pouring is initiated
+		TSharedPtr<FSLPouringEvent> Event = MakeShareable(new FSLPouringEvent(
+			FSLUuid::NewGuidInBase64Url(), InResult.Time,
+			FSLUuid::PairEncodeCantor(InResult.Self->GetUniqueID(), InResult.Other->GetUniqueID()),
+			InResult.Self, InResult.Other));
+		Event->EpisodeId = EpisodeId;
+		// Add event to the pending Pourings array
+		StartedPouringEvents.Emplace(Event);
+	}
+
+}
+
+// Publish finished event
+bool FSLContactEventHandler::FinishPouringEvent(USLBaseIndividual* InOther, float EndTime)
+{
+	// Use iterator to be able to remove the entry from the array
+	for (auto EventItr(StartedPouringEvents.CreateIterator()); EventItr; ++EventItr)
+	{
+		// It is enough to compare against the other id when searching
+		if ((*EventItr)->Individual2 == InOther)
+		{
+			// Set the event end time
+			(*EventItr)->EndTime = EndTime;
+
+			// Avoid publishing short events
+			if (((*EventItr)->EndTime - (*EventItr)->StartTime) > PouringEventMin)
+			{
+				OnSemanticEvent.ExecuteIfBound(*EventItr);
+			}
+
+			// Remove event from the pending list
+			EventItr.RemoveCurrent();
+
+			return true;
+		}
+	}
+	return false;
 }
 
 // Event called when a semantic overlap event begins
