@@ -29,6 +29,7 @@
 
 #include "Gaze/SLGazeTargetActor.h"
 #include "Gaze/SLGazeOriginActor.h"
+#include "SLPouringParticleAgentClass.h"
 
 #if WITH_EDITOR
 #include "Kismet2/ComponentEditorUtils.h" // GenerateValidVariableName
@@ -584,6 +585,10 @@ USLBaseIndividual* FSLIndividualUtils::CreateIndividualObject(UObject* Outer, AA
 	{
 		return NewObject<USLBaseIndividual>(Outer, USLSkyIndividual::StaticClass());
 	}
+	else if (Owner->IsA(ASLPouringParticleAgentClass::StaticClass()) || Owner->IsA(ASLPouringParticleAgentClass::StaticClass()))
+	{
+		return NewObject<USLParticleIndividual>(Outer, USLParticleIndividual::StaticClass());
+	}
 	//else if (Owner->IsA(AAtmosphericFog::StaticClass()) || Owner->GetName().Contains("SkySphere"))
 	//{
 	//	return NewObject<USLBaseIndividual>(Outer, USLSkyIndividual::StaticClass());
@@ -770,6 +775,7 @@ bool FSLIndividualUtils::CanHaveIndividualComponent(AActor* Actor)
 		|| Actor->IsA(ALight::StaticClass())
 		|| Actor->IsA(ASkyLight::StaticClass())
 		|| Actor->IsA(ASLVirtualCameraView::StaticClass())
+		|| Actor->IsA(ASLPouringParticleAgentClass::StaticClass())
 		|| Actor->GetName().Contains("SkySphere");
 }
 
