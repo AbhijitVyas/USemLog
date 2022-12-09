@@ -49,8 +49,6 @@ private:
 	void OnSLPouringEnd(USLBaseIndividual* Self, USLBaseIndividual* Other, float Time);
 
 private:
-	// Parent semantic overlap area
-	class USLPouringMonitor* Parent = nullptr;
 
 	// Array of started Pouring events
 	TArray<TSharedPtr<FSLPouringEvent>> StartedPouringEvents;

@@ -225,6 +225,17 @@ FSLOwlNode FSLOwlExperimentStatics::CreateInContactProperty(const FString& InDoc
 		RdfResource, FSLOwlAttributeValue(InDocPrefix, InObjId)));
 }
 
+// Create poured particles property
+FSLOwlNode FSLOwlExperimentStatics::CreatePouredParticlesProperty(const FString& InDocPrefix, const int InObjId)
+{
+	const FSLOwlPrefixName RdfResource("rdf", "resource");
+	const FSLOwlPrefixName KbPrefix("knowrob", "pouredParticles");
+
+	const FString Id = "particles_" + FString::SanitizeFloat(InObjId);
+	return FSLOwlNode(KbPrefix, FSLOwlAttribute(
+		RdfResource, FSLOwlAttributeValue(InDocPrefix, Id)));
+}
+
 // Create isSupported property
 FSLOwlNode FSLOwlExperimentStatics::CreateIsSupportedProperty(const FString& InDocPrefix, const FString& InObjId)
 {

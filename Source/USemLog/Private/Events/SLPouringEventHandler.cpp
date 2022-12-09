@@ -2,7 +2,6 @@
 // Author: Andrei Haidu (http://haidu.eu)
 
 #include "Events/SLPouringEventHandler.h"
-#include "Monitors/SLPouringMonitor.h"
 #include "Events/SLPouringEvent.h"
 #include "Events/SLSupportedByEvent.h"
 #include "Individuals/Type/SLBaseIndividual.h"
@@ -16,11 +15,11 @@ void FSLPouringEventHandler::Init(UObject* InParent)
 	if (!bIsInit)
 	{
 		// Check if parent is of right type
-		Parent = Cast<USLPouringMonitor>(InParent);
+		/*Parent = Cast<USLPouringMonitor>(InParent);
 		if (Parent)
 		{
 			bIsInit = true;
-		}
+		}*/
 	}
 }
 
@@ -29,11 +28,11 @@ void FSLPouringEventHandler::Start()
 {
 	if (!bIsStarted && bIsInit)
 	{
-		if (Parent)
+		/*if (Parent)
 		{
 			Parent->OnPouringBegin.AddRaw(this, &FSLPouringEventHandler::OnSLPouringBegin);
 			Parent->OnPouringEnd.AddRaw(this, &FSLPouringEventHandler::OnSLPouringEnd);
-		}
+		}*/
 
 		// Mark as started
 		bIsStarted = true;
@@ -46,10 +45,10 @@ void FSLPouringEventHandler::Finish(float EndTime, bool bForced)
 	if (!bIsFinished && (bIsInit || bIsStarted))
 	{
 		// Let parent first publish any pending (delayed) events
-		if(!Parent->IsFinished())
+		/*if (!Parent->IsFinished())
 		{
 			Parent->Finish(EndTime);
-		}
+		}*/
 		
 		// End and broadcast all started events
 		FinishAllEvents(EndTime);

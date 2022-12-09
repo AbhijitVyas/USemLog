@@ -75,10 +75,9 @@ private:
 	TArray<TSharedPtr<FSLPouringEvent>> StartedPouringEvents;
 	
 	/* Constant values */
-	constexpr static float ContactEventMin = 0.3f;
+	constexpr static float ContactEventMin = 0.05f;
 	constexpr static float SupportedByEventMin = 0.4f;
 	constexpr static float PouringEventMin = 0.3f;
-	constexpr static float ContactEventMin = 0.05f;
 	float PouringEndTime = 0.0;
 	int particlesOverlapEnded = 0;
 };
