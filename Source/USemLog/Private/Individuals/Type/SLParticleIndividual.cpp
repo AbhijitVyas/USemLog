@@ -1,10 +1,10 @@
 #include "Individuals/Type/SLParticleIndividual.h"
 
 USLParticleIndividual::USLParticleIndividual() {
-	
+
 }
 
- 
+
 // Called before destroying the object.
 void USLParticleIndividual::BeginDestroy()
 {

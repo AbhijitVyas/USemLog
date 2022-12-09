@@ -10,8 +10,8 @@ UCLASS(ClassGroup = (SL), DisplayName = "SL Pouring Particle Actor")
 class USEMLOG_API ASLPouringParticleAgentClass : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ASLPouringParticleAgentClass();
 
@@ -22,7 +22,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 

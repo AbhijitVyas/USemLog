@@ -2,21 +2,21 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Individuals/Type/SLVisibleIndividual.h"
+#include "Individuals/Type/SLBaseIndividual.h"
 #include "SLParticleIndividual.generated.h"
- 
+
 
 /**
  *
  */
 UCLASS(ClassGroup = SL)
-class USEMLOG_API USLParticleIndividual : public USLVisibleIndividual
+class USEMLOG_API USLParticleIndividual : public USLBaseIndividual
 {
     GENERATED_BODY()
 
 public:
     // Ctor
-	USLParticleIndividual();
+    USLParticleIndividual();
 
     // Called before destroying the object.
     virtual void BeginDestroy() override;
@@ -33,7 +33,7 @@ public:
 protected:
     // Get class name, virtual since each invidiual type will have different name
     virtual FString CalcDefaultClassValue() override;
- 
+
 private:
     // Set dependencies
     bool InitImpl();
@@ -47,4 +47,3 @@ private:
     // Clear all data of the individual
     void LoadReset();
 };
-
