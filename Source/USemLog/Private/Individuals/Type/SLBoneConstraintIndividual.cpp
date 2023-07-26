@@ -315,7 +315,8 @@ bool USLBoneConstraintIndividual::HasValidConstraintIndex() const
 // Check if the static mesh component is set
 bool USLBoneConstraintIndividual::HasValidSkeletalMeshComponent() const
 {
-	return SkeletalMeshComponent && SkeletalMeshComponent->IsValidLowLevel() && !SkeletalMeshComponent->IsPendingKill();
+	return SkeletalMeshComponent && IsValid(SkeletalMeshComponent) && IsValidChecked(SkeletalMeshComponent);
+	//return SkeletalMeshComponent && SkeletalMeshComponent->IsValidLowLevel() && !SkeletalMeshComponent->IsPendingKill();
 }
 
 // Set the skeletal mesh component

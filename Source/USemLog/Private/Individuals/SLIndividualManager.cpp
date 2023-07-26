@@ -202,7 +202,8 @@ ASLIndividualManager* ASLIndividualManager::GetExistingOrSpawnNew(UWorld* World)
 	// Check in world
 	for (TActorIterator<ASLIndividualManager>Iter(World); Iter; ++Iter)
 	{
-		if ((*Iter)->IsValidLowLevel() && !(*Iter)->IsPendingKillOrUnreachable())
+		if (IsValid((*Iter)) && IsValidChecked((*Iter)) && !(*Iter)->IsUnreachable())
+		//if ((*Iter)->IsValidLowLevel() && !(*Iter)->IsPendingKillOrUnreachable())
 		{
 			return *Iter;
 		}
@@ -292,7 +293,8 @@ bool ASLIndividualManager::InitImpl()
 		if (UActorComponent* AC = ActItr->GetComponentByClass(USLIndividualComponent::StaticClass()))
 		{			
 			USLIndividualComponent* IC = CastChecked<USLIndividualComponent>(AC);
-			if (IC->IsValidLowLevel() && !IC->IsPendingKill())
+			if (IsValid(IC) && IsValidChecked(IC) && !IC->IsUnreachable())
+			//if (IC->IsValidLowLevel() && !IC->IsPendingKill())
 			{
 				AddToCache(IC);
 				if (!IC->IsInit())

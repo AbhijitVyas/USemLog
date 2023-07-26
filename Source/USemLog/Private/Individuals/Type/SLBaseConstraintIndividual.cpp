@@ -72,13 +72,15 @@ FString USLBaseConstraintIndividual::CalcDefaultClassValue()
 // Check if the constraint1 individual is valid ('child' bone in a PhysicsAsset) 
 bool USLBaseConstraintIndividual::HasValidConstraint1Individual() const
 {
-	return ConstraintIndividual1 && ConstraintIndividual1->IsValidLowLevel() && !ConstraintIndividual1->IsPendingKill();
+	return ConstraintIndividual1 && IsValid(ConstraintIndividual1) && IsValidChecked(ConstraintIndividual1);
+	//return ConstraintIndividual1 && ConstraintIndividual1->IsValidLowLevel() && !ConstraintIndividual1->IsPendingKill();
 }
 
 // Check if the constraint1 individual is valid ('parent' bone in a PhysicsAsset)
 bool USLBaseConstraintIndividual::HasValidConstraint2Individual() const
 {
-	return ConstraintIndividual2 && ConstraintIndividual2->IsValidLowLevel() && !ConstraintIndividual2->IsPendingKill();
+	return ConstraintIndividual2 && IsValid(ConstraintIndividual2) && IsValidChecked(ConstraintIndividual2);
+	//return ConstraintIndividual2 && ConstraintIndividual2->IsValidLowLevel() && !ConstraintIndividual2->IsPendingKill();
 }
 
 // Private init implementation

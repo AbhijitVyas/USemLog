@@ -199,15 +199,25 @@ bool USLBaseIndividual::UpdateCachedPose(float Tolerance, FTransform* OutPose)
 {
 	if (IsInit())
 	{
-		const FTransform CurrPose = ParentActor->GetTransform();
-		if(!CachedPose.Equals(CurrPose, Tolerance))
-		{
-			CachedPose = CurrPose;
-			if (OutPose != nullptr)
+		if (ParentActor) {
+			const FTransform CurrPose = ParentActor->GetTransform();
+			if (!CachedPose.Equals(CurrPose, Tolerance))
 			{
-				*OutPose = CachedPose;
+				CachedPose = CurrPose;
+				if (OutPose != nullptr)
+				{
+					*OutPose = CachedPose;
+				}
+				return true;
 			}
-			return true;
+			else
+			{
+				if (OutPose != nullptr)
+				{
+					*OutPose = CachedPose;
+				}
+				return false;
+			}
 		}
 		else
 		{
@@ -217,6 +227,7 @@ bool USLBaseIndividual::UpdateCachedPose(float Tolerance, FTransform* OutPose)
 			}
 			return false;
 		}
+		
 	}
 	else
 	{
@@ -243,8 +254,11 @@ bool USLBaseIndividual::UpdateCachedPose(float Tolerance, FTransform* OutPose)
 // True if individual is part of another individual
 bool USLBaseIndividual::IsAttachedToAnotherIndividual() const
 {
-	return AttachedToActor && AttachedToActor->IsValidLowLevel() && !AttachedToActor->IsPendingKill()
-		&& AttachedToIndividual && AttachedToIndividual->IsValidLowLevel() && !AttachedToIndividual->IsPendingKill();
+	
+	return AttachedToActor && IsValid(AttachedToActor) && IsValidChecked(AttachedToActor)
+		&& AttachedToIndividual && IsValid(AttachedToActor) && IsValidChecked(AttachedToActor);
+	//return AttachedToActor && AttachedToActor->IsValidLowLevel() && !AttachedToActor->IsPendingKill()
+		//&& AttachedToIndividual && AttachedToIndividual->IsValidLowLevel() && !AttachedToIndividual->IsPendingKill();
 }
 
 // Get all children of the individual in a newly created array
@@ -368,7 +382,8 @@ void USLBaseIndividual::SetIsLoaded(bool bNewValue, bool bBroadcast)
 // Check that the parent actor is set and valid
 bool USLBaseIndividual::HasValidParentActor() const
 {
-	return ParentActor && ParentActor->IsValidLowLevel() && !ParentActor->IsPendingKill();
+	return ParentActor && IsValid(ParentActor) && IsValidChecked(ParentActor);
+	//return ParentActor && ParentActor->IsValidLowLevel() && !ParentActor->IsPendingKill();
 }
 
 // Set pointer to parent actor

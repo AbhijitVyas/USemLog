@@ -221,7 +221,8 @@ bool ASLIndividualInfoManager::InitImpl()
 		if (UActorComponent* AC = ActItr->GetComponentByClass(USLIndividualInfoComponent::StaticClass()))
 		{
 			USLIndividualInfoComponent* IC = CastChecked<USLIndividualInfoComponent>(AC);
-			if (IC->IsValidLowLevel() && !IC->IsPendingKill())
+			if (IsValid(IC) && IsValidChecked(IC) && !IC->IsUnreachable())
+			//if (IC->IsValidLowLevel() && !IC->IsPendingKill())
 			{
 				IndividualInfoComponents.Add(IC);
 			}

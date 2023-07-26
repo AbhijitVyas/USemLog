@@ -29,7 +29,8 @@
 
 #include "Gaze/SLGazeTargetActor.h"
 #include "Gaze/SLGazeOriginActor.h"
-#include "SLPouringParticleAgentClass.h"
+#include "Actors/SLPouringParticleAgentClass.h"
+#include "Actors/SLStaticMeshAgentClass.h"
 
 #if WITH_EDITOR
 #include "Kismet2/ComponentEditorUtils.h" // GenerateValidVariableName
@@ -589,6 +590,10 @@ USLBaseIndividual* FSLIndividualUtils::CreateIndividualObject(UObject* Outer, AA
 	{
 		return NewObject<USLParticleIndividual>(Outer, USLParticleIndividual::StaticClass());
 	}
+	else if (Owner->IsA(ASLStaticMeshAgentClass::StaticClass()) || Owner->IsA(ASLStaticMeshAgentClass::StaticClass()))
+	{
+		return NewObject<USLCustomStaticMeshComponentIndividual>(Outer, USLCustomStaticMeshComponentIndividual::StaticClass());
+	}
 	//else if (Owner->IsA(AAtmosphericFog::StaticClass()) || Owner->GetName().Contains("SkySphere"))
 	//{
 	//	return NewObject<USLBaseIndividual>(Outer, USLSkyIndividual::StaticClass());
@@ -729,7 +734,8 @@ USLIndividualComponent* FSLIndividualUtils::AddNewIndividualComponent(AActor* Ac
 		Actor->GetComponents(PostInstanceComponents);
 		for (UActorComponent* ActorComponent : PostInstanceComponents)
 		{
-			if (!ActorComponent->IsRegistered() && ActorComponent->bAutoRegister && !ActorComponent->IsPendingKill() && !PreInstanceComponents.Contains(ActorComponent))
+			if (!ActorComponent->IsRegistered() && ActorComponent->bAutoRegister && IsValid(ActorComponent) && IsValidChecked(ActorComponent) && !PreInstanceComponents.Contains(ActorComponent))
+			//if (!ActorComponent->IsRegistered() && ActorComponent->bAutoRegister && !ActorComponent->IsPendingKill() && !PreInstanceComponents.Contains(ActorComponent))
 			{
 				ActorComponent->RegisterComponent();
 			}
@@ -776,6 +782,7 @@ bool FSLIndividualUtils::CanHaveIndividualComponent(AActor* Actor)
 		|| Actor->IsA(ASkyLight::StaticClass())
 		|| Actor->IsA(ASLVirtualCameraView::StaticClass())
 		|| Actor->IsA(ASLPouringParticleAgentClass::StaticClass())
+		|| Actor->IsA(ASLStaticMeshAgentClass::StaticClass())
 		|| Actor->GetName().Contains("SkySphere");
 }
 

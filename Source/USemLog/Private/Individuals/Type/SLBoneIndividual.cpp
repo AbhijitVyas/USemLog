@@ -337,7 +337,8 @@ bool USLBoneIndividual::HasValidMaterialIndex() const
 // Check if the static mesh component is set
 bool USLBoneIndividual::HasValidSkeletalMeshComponent() const
 {
-	return SkeletalMeshComponent && SkeletalMeshComponent->IsValidLowLevel() && !SkeletalMeshComponent->IsPendingKill();
+	return SkeletalMeshComponent && IsValid(SkeletalMeshComponent) && IsValidChecked(SkeletalMeshComponent);
+	//return SkeletalMeshComponent && SkeletalMeshComponent->IsValidLowLevel() && !SkeletalMeshComponent->IsPendingKill();
 }
 
 // Set sekeletal mesh
@@ -375,7 +376,8 @@ bool USLBoneIndividual::SetSkeletalMeshComponent()
 // Check if a parent individual is set
 bool USLBoneIndividual::HasValidParentIndividual() const
 {
-	return ParentIndividual && ParentIndividual->IsValidLowLevel() && !ParentIndividual->IsPendingKill();
+	return ParentIndividual && IsValid(ParentIndividual) && IsValidChecked(ParentIndividual);
+	//return ParentIndividual && ParentIndividual->IsValidLowLevel() && !ParentIndividual->IsPendingKill();
 }
 
 // Set parent individual (if any) it might be root bone
@@ -421,7 +423,8 @@ bool USLBoneIndividual::HasValidChildrenIndividuals() const
 
 	for (const auto& CI : ChildrenIndividuals)
 	{
-		if (!CI || !CI->IsValidLowLevel() || CI->IsPendingKill())
+		if (!CI || !IsValid(CI) || !IsValidChecked(CI))
+		//if (!CI || !CI->IsValidLowLevel() || CI->IsPendingKill())
 		{
 			return false;
 		}

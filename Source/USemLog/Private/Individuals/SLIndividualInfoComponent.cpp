@@ -535,7 +535,8 @@ bool USLIndividualInfoComponent::BindDelegates()
 // Check if individual component is set
 bool USLIndividualInfoComponent::HasValidIndividualComponent() const
 {
-	return IndividualComponent && IndividualComponent->IsValidLowLevel() && !IndividualComponent->IsPendingKill();
+	return IndividualComponent && IsValid(IndividualComponent) && IsValidChecked(IndividualComponent) && !IndividualComponent->IsUnreachable();
+	//return IndividualComponent && IndividualComponent->IsValidLowLevel() && !IndividualComponent->IsPendingKill();
 }
 
 // Set the individual component
@@ -592,7 +593,8 @@ void USLIndividualInfoComponent::ClearTextComponent()
 // Check if the individual text component is valid
 bool USLIndividualInfoComponent::HasValidTextComponent()
 {
-	return TextComponent && TextComponent->IsValidLowLevel() && !TextComponent->IsPendingKill();
+	return TextComponent && IsValid(TextComponent) && IsValidChecked(TextComponent) && !TextComponent->IsUnreachable();
+	//return TextComponent && TextComponent->IsValidLowLevel() && !TextComponent->IsPendingKill();
 }
 
 // Set text components for the children

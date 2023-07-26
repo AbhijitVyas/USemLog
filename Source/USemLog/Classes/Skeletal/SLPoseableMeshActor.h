@@ -34,7 +34,7 @@ public:
 
 protected:
 	// Clone of the skeletal mesh component with movable capabilities
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Semantic Logger")
 	UPoseableMeshComponent* PoseableMeshComponent;
 
 };

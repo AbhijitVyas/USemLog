@@ -54,57 +54,751 @@ void FSLEdModeToolkit::Init(const TSharedPtr<IToolkitHost>& InitToolkitHost)
 		[
 			SNew(SVerticalBox)
 
+
 			// Flag checkboxes
-			+ CreateCompactCheckBoxSlot()
-			//+ CreateOverwriteFlagSlot()
-			//+ CreateOnlySelectedFlagSlot()
-			//+ CreateIncludeChildrenFlagSlot()
-			//+ CreateResetFlagSlot()
-			//+ CreateTryImportFlagSlot()
+//			+ CreateCompactCheckBoxSlot()
++SVerticalBox::Slot()
+.AutoHeight()
+.Padding(2)
+.HAlign(HAlign_Center)
+[
+	SNew(SHorizontalBox)
 
-			// Individual Components
-			+ CreateSeparatorHackSlot()
-			+ CreateIndividualsTxtSlot()
-			+ CreateIndividualsSlot()
-			+ CreateIndividualsFuncSlot()
+	+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("OverwriteCB", "Overwrite:"))
+		]
+	+ SHorizontalBox::Slot()
+		[
+			SNew(SCheckBox)
+			.ToolTipText(LOCTEXT("OverwriteCBTip", "Overwrites any existing data, use with caution"))
+		.IsChecked(ECheckBoxState::Unchecked)
+		.OnCheckStateChanged(this, &FSLEdModeToolkit::OnCheckedOverwriteFlag)
+		]
 
-			// Individual Values
-			+ CreateIndividualValuesTxtSlot()
-			+ CreateIndividualValuesAllSlot()
-			+ CreateIndivualValuesIdSlot()
-			+ CreateIndividualValuesClassSlot()
-			+ CreateIndividualValuesVisualMaskSlot()
+	+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("OnlySelectedCB", " ||  Selected:"))
+		]
 
-			// Import / Export
-			+ CreateImportExportTxtSlot()
-			+ CreateImportExportSlot()
+	+ SHorizontalBox::Slot()
+		[
+			SNew(SCheckBox)
+			.ToolTipText(LOCTEXT("OnlySelectedCBTip", "Consider only selected actors.."))
+		.IsChecked(ECheckBoxState::Unchecked)
+		.OnCheckStateChanged(this, &FSLEdModeToolkit::OnCheckedOnlySelectedFlag)
+		]
 
-			// Individual Visual Info
-			+ CreateSeparatorHackSlot()
-			+ CreateIndividualsInfoTxtSlot()
-			+ CreateIndividualsInfoSlot()
-			+ CreateIndividualsInfoFuncSlot()
+	+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("ResetCB", " ||  Reset:"))
+		]
 
-			// Individual Managers
-			+ CreateSeparatorHackSlot()
-			+ CreateIndividualsManagersTxtSlot()
-			+ CreateIndividualsManagersSlot()
+	+ SHorizontalBox::Slot()
+		[
+			SNew(SCheckBox)
+			.ToolTipText(LOCTEXT("ResetCBTip", "Apply reset flag to any related functions."))
+		.IsChecked(ECheckBoxState::Unchecked)
+		.OnCheckStateChanged(this, &FSLEdModeToolkit::OnCheckedResetFlag)
+		]
 
-			// Semantic Map
-			+ CreateSeparatorHackSlot()
-			+ CreateSemMapSlot()
+	+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("TryImportCB", " ||  Import:"))
+		]
 
-			// Misc
-			+ CreateSeparatorHackSlot()
-			+ CreateUtilsTxtSlot()
-			+ CreateConvertToVizMapSlot()
-			+ CreateLogIdsSlot()
-			+ CreateAddSemMonitorsSlot()
-			+ CreateEnableOverlapsSlot()
-			+ CreateShowSemData()
-			+ CreateEnableInstacedMeshMaterialsSlot()
-			+ CreateTriggerGCSlot()
-			+ CreateGenericButtonSlot()
+	+ SHorizontalBox::Slot()
+		[
+			SNew(SCheckBox)
+			.ToolTipText(LOCTEXT("TryImportCBTip", "If available data will be imported or newly generated first.."))
+		.IsChecked(ECheckBoxState::Checked)
+		.OnCheckStateChanged(this, &FSLEdModeToolkit::OnCheckedTryImportFlag)
+		]
+
+
+	+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("ChildrenCB", " ||  Children:"))
+		]
+
+	+ SHorizontalBox::Slot()
+		[
+			SNew(SCheckBox)
+			.ToolTipText(LOCTEXT("IncludeChildrenCB", "Include children data (e.g. bones/links..)"))
+		.IsChecked(ECheckBoxState::Checked)
+		.OnCheckStateChanged(this, &FSLEdModeToolkit::OnCheckedIncludeChildrenFlag)
+		]
+]
+
+	//+ CreateOverwriteFlagSlot()
+	//+ CreateOnlySelectedFlagSlot()
+	//+ CreateIncludeChildrenFlagSlot()
+	//+ CreateResetFlagSlot()
+	//+ CreateTryImportFlagSlot()
+
+	// Individual Components
+//			+ CreateSeparatorHackSlot()
+	+SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("SeparatorHack", "------------------------------------------"))
+		]
+		]
+	//			+ CreateIndividualsTxtSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(10)
+		.HAlign(HAlign_Center)
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("IndividualsTxt", "Individuals:"))
+		]
+	//			+ CreateIndividualsSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(5)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("CreateIndividuals", "Create"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("CreateIndividualsTip", "Create individuals.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnCreateIndividuals)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ClearIndividuals", "Clear"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("ClearIndividualsTip", "Clear individuals.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnClearIndividuals)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("InitIndividuals", "Init"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("InitIndividualsTip", "Call Init(bReset) on individuals.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnInitIndividuals)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("LoadIndividuals", "Load"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("LoadIndividualsTip", "Call Load(bReset, bTryImport) on individuals.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnLoadIndividuals)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ConnectIndividuals", "Connect"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("ConnectIndividualsTip", "Connect delegates between objects, components, managers, etc.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnConnectIndividuals)
+		]
+		]
+	//			+ CreateIndividualsFuncSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(5)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("IndividualsToggleVisualMaskVisiblitiy", "Toggle Masks"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("IndividualsToggleMaskTip", "Toggle between the visual mask and the original material visualization.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnToggleIndividualVisualMaskVisiblity)
+		]
+
+		]
+
+	// Individual Values
+//			+ CreateIndividualValuesTxtSlot()
+	+SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(5)
+		.HAlign(HAlign_Center)
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("IndividualValuesTxt", "Individual values:"))
+		]
+	//			+ CreateIndividualValuesAllSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(5)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("WriteAll", "Write All"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("WriteAllTip", "Write all individual values.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnWriteAllIndvidualValues)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ClearAll", "Clear All"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("ClearAllTip", "Clear all individual values.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnClearAllIndividualValues)
+		]
+		]
+	//			+ CreateIndivualValuesIdSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("WriteIds", "Write Ids"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("WriteIdsTip", "Generates unique ids for every individual.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnWriteIndividualIds)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ClearIds", "Clear Ids"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("ClearIdsTip", "Clears all generated ids.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnClearIndividualIds)
+		]
+		]
+	//			+ CreateIndividualValuesClassSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("WriteClassNames", "Write Class Names"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("WriteClassNames", "Writes known class names"))
+		.OnClicked(this, &FSLEdModeToolkit::OnWriteIndividualClasses)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("RmClassNames", "Remove Class Names"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("RmClassNamesTip", "Removes all class names"))
+		.OnClicked(this, &FSLEdModeToolkit::OnClearIndividualClasses)
+		]
+		]
+	//			+ CreateIndividualValuesVisualMaskSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("WriteVisualMasks", "Write Visual Masks"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("WriteVisualMasksTip", "Writes unique visual masks for visual entities"))
+		.OnClicked(this, &FSLEdModeToolkit::OnWriteIndividualVisualMasks)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ClearVisualMasks", "Clear Visual Masks"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("ClearVisualMasksTip", "Removes all visual masks"))
+		.OnClicked(this, &FSLEdModeToolkit::OnClearIndividualVisualMasks)
+		]
+		]
+
+	// Import / Export
+//			+ CreateImportExportTxtSlot()
+	+SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(5)
+		.HAlign(HAlign_Center)
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("ImportExportTxt", "Import/export individual values:"))
+		]
+	//			+ CreateImportExportSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(5)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ExportValues", "Export"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("ExportValuesTip", "Export individual values.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnExportValues)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ImportValues", "Import"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("ImportValuesTip", "Import individual values.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnImportValues)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ClearExportedValues", "Clear"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("ClearExportedValuesTip", "Clear exported individual values.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnClearExportedValues)
+		]
+		]
+
+	// Individual Visual Info
+//			+ CreateSeparatorHackSlot()
+	+SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("SeparatorHack", "------------------------------------------"))
+		]
+		]
+	//			+ CreateIndividualsInfoTxtSlot()
+	+ (SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(10)
+		.HAlign(HAlign_Center)
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("IndividualsInfoTxt", "Individuals info components:"))
+		])
+		//			+ CreateIndividualsInfoSlot()
+		+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(5)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("CreateIndividualsInfo", "Create"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("CreateIndividualsInfoTip", "Create individuals info components.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnCreateIndividualsInfo)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ClearIndividualsInfo", "Clear"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("ClearIndividualsInfo", "Clear individual info components"))
+		.OnClicked(this, &FSLEdModeToolkit::OnClearIndividualsInfo)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("InitIndividualsInfo", "Init"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("InitIndividualsInfoTip", "Call Init(bReset) on the individuals info components.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnInitIndividualsInfo)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("LoadIndividualsInfo", "Load"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("LoadIndividualsInfoTip", "Call Load(bReset) on the individuals info components.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnLoadIndividualsInfo)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ConnectIndividualsInfo", "Connect"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("ConnectIndividualsInfoTip", "Call Load(bReset) on the individuals info components.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnConnectIndividualsInfo)
+		]
+		]
+	//			+ CreateIndividualsInfoFuncSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(5)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ToggleIndividualsInfo", "Toggle Visibility"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("SemDataVisInfoToggleTip", "Toggle individuals info visibility.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnToggleIndividualsInfoVisiblity)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("SemDataVisInfoUpdate", "Update"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("SemDataVisInfoUpdateTip", "Point text towards camera.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnUpdateIndividualsInfoOrientation)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("SemDataVisInfoLIveUpdate", "ToggleDynamicUpdate"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("SemDataVisInfoLIveUpdateTip", "Toggle live update.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnToggleIndividualsInfoLiveOrientationUpdate)
+		]
+
+		]
+
+	// Individual Managers
+//			+ CreateSeparatorHackSlot()
+	+SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("SeparatorHack", "------------------------------------------"))
+		]
+		]
+	//			+ CreateIndividualsManagersTxtSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(10)
+		.HAlign(HAlign_Center)
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("IndividualManagersTxt", "Managers:"))
+		]
+	//			+ CreateIndividualsManagersSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(5)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("InitIndividualManagers", "Init"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("InitIndividualManagersTip", "Init managers.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnInitIndividualManagers)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("LoadIndividualManagers", "Load"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("LoadIndividualManagersTip", "Load managers.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnLoadIndividualManagers)
+		]
+
+	+ SHorizontalBox::Slot()
+		.Padding(2)
+		.AutoWidth()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ConnectIndividualManagers", "Connect"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("ConnectIndividualManagersTip", "Connect managers.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnConnectIndividualManagers)
+		]
+		]
+
+	// Semantic Map
+//			+ CreateSeparatorHackSlot()
+	+SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("SeparatorHack", "------------------------------------------"))
+		]
+		]
+	//			+ CreateSemMapSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(10)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.VAlign(VAlign_Center)
+		.AutoWidth()
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("SemMapTxt", "Semantic Map: "))
+		]
+
+	+ SHorizontalBox::Slot()
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("SemMapWrite", "Write"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("SemMapWriteTip", "Exports the generated semantic map to an owl file"))
+		.OnClicked(this, &FSLEdModeToolkit::OnWriteSemMap)
+		]
+		]
+
+	// Misc
+//			+ CreateSeparatorHackSlot()
+	+SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SHorizontalBox)
+
+			+ SHorizontalBox::Slot()
+		.AutoWidth()
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("SeparatorHack", "------------------------------------------"))
+		]
+		]
+	//			+ CreateUtilsTxtSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(5)
+		.HAlign(HAlign_Center)
+		[
+			SNew(STextBlock)
+			.Text(LOCTEXT("UtilsTxt", "Utils:"))
+		]
+	//			+ CreateConvertToVizMapSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ConvertToViz", "Convert Map to Viz"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("ConvertToVizTip", "Removes physics creates poseable mesh components.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnConvertToViz)
+		]
+	//			+ CreateLogIdsSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("LogIds", "Log Ids"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("LogIdsTip", "write the individual ids in the as a log string.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnLogIds)
+		]
+	//			+ CreateAddSemMonitorsSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("AddSemMon", "Add Semantic Monitors"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("AddSemMonTip", "Creates or updates semantic monitor components.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnAddSemMon)
+		]
+	//			+ CreateEnableOverlapsSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("EnableOverlaps", "Enable Overlaps"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("EnableOverlapsTip", "Enables overlap events on all actors.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnEnableOverlaps)
+		]
+	//			+ CreateShowSemData()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("ShowSemData", "Show Semantic Data"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("ShowSemDataTip", "Visualize semantic data.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnShowSemData)
+		]
+	//			+ CreateEnableInstacedMeshMaterialsSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("EnableMaterialsForInstancedStaticMesh", "Enable Materials for Instanced Static Mesh"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("EnableMaterialsForInstancedStaticMeshTip", "Make sure every material asset can be rendered as an instanced static mesh.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnEnableMaterialsForInstancedStaticMesh)
+		]
+	//			+ CreateTriggerGCSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("TriggerGC", "GC"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("TriggerGCTip", "This will triger the garbage collection"))
+		.OnClicked(this, &FSLEdModeToolkit::OnTriggerGC)
+		]
+	//			+ CreateGenericButtonSlot()
+	+ SVerticalBox::Slot()
+		.AutoHeight()
+		.Padding(2)
+		.HAlign(HAlign_Center)
+		[
+			SNew(SButton)
+			.Text(LOCTEXT("GenericButton", "Generic Button"))
+		.IsEnabled(true)
+		.ToolTipText(LOCTEXT("GenericButtonTip", "Test various things.."))
+		.OnClicked(this, &FSLEdModeToolkit::OnGenericButton)
+		]
 		];
 
 	FModeToolkit::Init(InitToolkitHost);
@@ -130,7 +824,7 @@ class FEdMode* FSLEdModeToolkit::GetEditorMode() const
 
 /* -Start- Vertical Slot Entries */
 // Separator hack slot
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateSeparatorHackSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateSeparatorHackSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -149,7 +843,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateSeparatorHackSlot()
 }
 
 // Create the checkbox slots as a bundle
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateCompactCheckBoxSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateCompactCheckBoxSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -237,7 +931,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateCompactCheckBoxSlot()
 
 
 // Checkboxes
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateOverwriteFlagSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateOverwriteFlagSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -262,7 +956,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateOverwriteFlagSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateOnlySelectedFlagSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateOnlySelectedFlagSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -288,7 +982,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateOnlySelectedFlagSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateResetFlagSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateResetFlagSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -314,7 +1008,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateResetFlagSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateTryImportFlagSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateTryImportFlagSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -340,7 +1034,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateTryImportFlagSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIncludeChildrenFlagSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIncludeChildrenFlagSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -368,7 +1062,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIncludeChildrenFlagSlot()
 
 
 // Individual Components
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsTxtSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIndividualsTxtSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -380,7 +1074,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsTxtSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIndividualsSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -446,7 +1140,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsFuncSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIndividualsFuncSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -471,7 +1165,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsFuncSlot()
 
 
 // Individual Values
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualValuesTxtSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIndividualValuesTxtSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -483,7 +1177,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualValuesTxtSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualValuesAllSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIndividualValuesAllSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -516,7 +1210,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualValuesAllSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndivualValuesIdSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIndivualValuesIdSlot()
 {
 	return 	SVerticalBox::Slot()
 		.AutoHeight()
@@ -549,7 +1243,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndivualValuesIdSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualValuesClassSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIndividualValuesClassSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -582,7 +1276,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualValuesClassSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualValuesVisualMaskSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIndividualValuesVisualMaskSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -617,7 +1311,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualValuesVisualMaskSlot()
 
 
 // Import / Export
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateImportExportTxtSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateImportExportTxtSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -629,7 +1323,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateImportExportTxtSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateImportExportSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateImportExportSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -675,7 +1369,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateImportExportSlot()
 
 
 // Individual Visual Info
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsInfoTxtSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIndividualsInfoTxtSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -687,7 +1381,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsInfoTxtSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsInfoSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIndividualsInfoSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -753,7 +1447,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsInfoSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsInfoFuncSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIndividualsInfoFuncSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -801,7 +1495,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsInfoFuncSlot()
 
 
 // Individual Managers
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsManagersTxtSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIndividualsManagersTxtSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -813,7 +1507,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsManagersTxtSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsManagersSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateIndividualsManagersSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -859,7 +1553,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateIndividualsManagersSlot()
 
 
 // Semantic Map
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateSemMapSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateSemMapSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -889,7 +1583,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateSemMapSlot()
 
 
 // Misc
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateUtilsTxtSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateUtilsTxtSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -901,7 +1595,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateUtilsTxtSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateConvertToVizMapSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateConvertToVizMapSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -916,7 +1610,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateConvertToVizMapSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateLogIdsSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateLogIdsSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -931,7 +1625,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateLogIdsSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateAddSemMonitorsSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateAddSemMonitorsSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -946,7 +1640,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateAddSemMonitorsSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateEnableOverlapsSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateEnableOverlapsSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -961,7 +1655,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateEnableOverlapsSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateShowSemData()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateShowSemData()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -976,7 +1670,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateShowSemData()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateEnableInstacedMeshMaterialsSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateEnableInstacedMeshMaterialsSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -991,7 +1685,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateEnableInstacedMeshMaterialsSlot()
 		];
 }
 
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateTriggerGCSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateTriggerGCSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
@@ -1007,7 +1701,7 @@ SVerticalBox::FSlot& FSLEdModeToolkit::CreateTriggerGCSlot()
 }
 
 // Info
-SVerticalBox::FSlot& FSLEdModeToolkit::CreateGenericButtonSlot()
+SVerticalBox::FSlot::FSlotArguments& FSLEdModeToolkit::CreateGenericButtonSlot()
 {
 	return SVerticalBox::Slot()
 		.AutoHeight()
