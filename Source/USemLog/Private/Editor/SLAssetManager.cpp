@@ -194,6 +194,7 @@ void USLAssetManager::MoveReferencedObjects(FName PackageName, const FString& So
 						continue;
 					}
 
+					//if (SoftAsset.Last().AssetClassPath.ToString().Equals(TEXT("World")))
 					if (SoftAsset.Last().AssetClass.ToString().Equals(TEXT("World")))
 					{
 						AssetsList.Add(SoftAsset.Last());

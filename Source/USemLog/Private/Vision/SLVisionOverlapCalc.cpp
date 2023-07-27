@@ -168,7 +168,8 @@ void USLVisionOverlapCalc::ScreenshotCB(int32 SizeX, int32 SizeY, const TArray<F
 	{
 		// Compress image
 		TArray<uint8> CompressedBitmap;
-		FImageUtils::CompressImageArray(SizeX, SizeY, Bitmap, CompressedBitmap);
+		//FImageUtils::CompressImageArray(SizeX, SizeY, Bitmap, CompressedBitmap);
+		FImageUtils::ThumbnailCompressImageArray(SizeX, SizeY, Bitmap, CompressedBitmap);
 		FString Path = FPaths::ProjectDir() + "/SemLog/" + SaveLocallyFolderName + "/" + SubFolderName + "/" + CurrImageFilename + ".png";
 		FPaths::RemoveDuplicateSlashes(Path);
 		FFileHelper::SaveArrayToFile(CompressedBitmap, *Path);

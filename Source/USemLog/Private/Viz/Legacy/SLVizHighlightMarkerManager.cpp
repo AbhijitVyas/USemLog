@@ -26,7 +26,8 @@ void ASLVizHighlightMarkerManager::EndPlay(const EEndPlayReason::Type EndPlayRea
 // Clear hihlight marker
 bool ASLVizHighlightMarkerManager::ClearMarker(USLVizHighlightMarker* HighlightMarker)
 {
-	if (HighlightMarker && HighlightMarker->IsValidLowLevel() && !HighlightMarker->IsPendingKillOrUnreachable())
+	if (HighlightMarker && IsValid(HighlightMarker) && IsValidChecked(HighlightMarker) && !HighlightMarker->IsUnreachable())
+	//if (HighlightMarker && HighlightMarker->IsValidLowLevel() && !HighlightMarker->IsPendingKillOrUnreachable())
 	{
 		//HighlightMarker->ConditionalBeginDestroy();
 		HighlightMarker->DestroyComponent();
@@ -53,7 +54,8 @@ void ASLVizHighlightMarkerManager::ClearAllMarkers()
 {
 	for (const auto& HM : HighlightMarkers)
 	{
-		if (HM->IsValidLowLevel() && !HM->IsPendingKillOrUnreachable())
+		if (IsValid(HM) && IsValidChecked(HM) && !HM->IsUnreachable())
+		//if (HM->IsValidLowLevel() && !HM->IsPendingKillOrUnreachable())
 		{
 			//HM->ConditionalBeginDestroy();
 			HM->DestroyComponent();
@@ -102,7 +104,8 @@ USLVizHighlightMarker * ASLVizHighlightMarkerManager::CreateHighlightMarker(USke
 // Change the visual parameters of the highlight marker
 bool ASLVizHighlightMarkerManager::SetVisualParameters(USLVizHighlightMarker* HighlightMarker, const FSLVizHighlightMarkerVisualParams& VisualParams)
 {
-	if (HighlightMarker && HighlightMarker->IsValidLowLevel() && !HighlightMarker->IsPendingKillOrUnreachable())
+	if (HighlightMarker && IsValid(HighlightMarker) && IsValidChecked(HighlightMarker) && !HighlightMarker->IsUnreachable())
+	//if (HighlightMarker && HighlightMarker->IsValidLowLevel() && !HighlightMarker->IsPendingKillOrUnreachable())
 	{
 		if (HighlightMarkers.Contains(HighlightMarker))
 		{

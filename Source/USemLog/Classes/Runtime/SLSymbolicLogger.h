@@ -9,6 +9,7 @@
 #include "Events/ISLEventHandler.h"
 #include "ROSProlog/SLPrologClient.h"
 #include "Owl/SLOwlExperiment.h"
+#include "Knowrob/SLKRRestClient.h"
 #include "SLSymbolicLogger.generated.h"
 
 // Forward declarations
@@ -60,6 +61,8 @@ public:
 
 	// Check if the manager is running independently
 	bool IsRunningIndependently() const { return bUseIndependently; };
+
+	void SetSLKRRestClient(FSLKRRestClient* InFSLKRRestClient);
 
 protected:
 	// Init logger (called when the logger is used independently)
@@ -182,6 +185,8 @@ private:
 
 	// Episode end time
 	float EpisodeEndTime;
+
+	FSLKRRestClient* fSLKRRestClient;
 
 	// ROS publisher
 	UPROPERTY()

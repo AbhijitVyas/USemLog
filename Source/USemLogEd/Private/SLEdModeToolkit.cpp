@@ -2607,7 +2607,8 @@ FReply FSLEdModeToolkit::OnGenericButton()
 
 	for (const auto Act : GetSelectedActors())
 	{
-		if (!Act->IsValidLowLevel() || Act->IsPendingKillOrUnreachable())
+		if (!IsValid(Act) || !IsValidChecked(Act) || Act->IsUnreachable())
+		//if (!Act->IsValidLowLevel() || Act->IsPendingKillOrUnreachable())
 		{
 			UE_LOG(LogTemp, Error, TEXT("%s::%d Actor with issues found.."),
 				*FString(__FUNCTION__), __LINE__, *Act->GetName());
@@ -2616,7 +2617,8 @@ FReply FSLEdModeToolkit::OnGenericButton()
 		{
 			for (const auto C : Act->GetComponents())
 			{
-				if (!C->IsValidLowLevel() || !C->IsRegistered() || C->IsPendingKillOrUnreachable())
+				if (!C->IsRegistered() || !IsValid(C) || !IsValidChecked(C) || C->IsUnreachable())
+				//if (!C->IsValidLowLevel() || !C->IsRegistered() || C->IsPendingKillOrUnreachable())
 				{
 					UE_LOG(LogTemp, Error, TEXT("%s::%d %s: component with issues found.."),
 						*FString(__FUNCTION__), __LINE__, *Act->GetName());
@@ -2678,7 +2680,8 @@ FReply FSLEdModeToolkit::OnGenericButton()
 // Check if the individual manager is set
 bool FSLEdModeToolkit::HasValidIndividualManager() const
 {
-	return IndividualManager && IndividualManager->IsValidLowLevel() && !IndividualManager->IsPendingKill();
+	return IndividualManager && IsValid(IndividualManager) && IsValidChecked(IndividualManager);
+	//return IndividualManager && IndividualManager->IsValidLowLevel() && !IndividualManager->IsPendingKill();
 }
 
 // Set the individual manager
@@ -2691,7 +2694,8 @@ bool FSLEdModeToolkit::SetIndividualManager()
 // Check if the individual info manager is set
 bool FSLEdModeToolkit::HasValidIndividualInfoManager() const
 {
-	return IndividualInfoManager && IndividualInfoManager->IsValidLowLevel() && !IndividualInfoManager->IsPendingKill();;
+	return IndividualInfoManager && IsValid(IndividualInfoManager) && IsValidChecked(IndividualInfoManager);
+	//return IndividualInfoManager && IndividualInfoManager->IsValidLowLevel() && !IndividualInfoManager->IsPendingKill();
 }
 
 // Set the individual info manager
@@ -2822,6 +2826,7 @@ void FSLEdModeToolkit::LogObjectInfo(UWorld* World) const
 		}
 
 		/* Pending kill */
+		//if (IsValid(ObjectItr) || IsValidChecked(ObjectItr))
 		if (ObjectItr->IsPendingKill())
 		{
 			IsPendingKillNum++;

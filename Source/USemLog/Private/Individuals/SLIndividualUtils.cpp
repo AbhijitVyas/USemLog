@@ -677,16 +677,17 @@ USLSkeletalDataAsset* FSLIndividualUtils::FindSkeletalDataAsset(AActor* Owner)
 			TArray<FAssetData> AssetData;
 			FARFilter Filter;
 			Filter.PackagePaths.Add("/USemLog/Skeletal");
-			Filter.ClassNames.Add(USLSkeletalDataAsset::StaticClass()->GetFName());
+			//Filter.ClassNames.Add(USLSkeletalDataAsset::StaticClass()->GetFName());
+			Filter.ClassPaths.Add(FTopLevelAssetPath(USLSkeletalDataAsset::StaticClass()));
 			AssetRegistryModule.Get().GetAssets(Filter, AssetData);
-
+			
 			// Search for the results
 			for (const auto& AD : AssetData)
 			{
-				//if (AD.AssetName.ToString().Contains(SkelAssetName))
-				//{
-				//	return Cast<USLSkeletalDataAsset>(AD.GetAsset());
-				//}
+				/*if (AD.AssetName.ToString().Contains(SkelAssetName))
+				{
+					return Cast<USLSkeletalDataAsset>(AD.GetAsset());
+				}*/
 				if (AD.AssetName.ToString().EndsWith(SkelAssetName))
 				{
 					return Cast<USLSkeletalDataAsset>(AD.GetAsset());

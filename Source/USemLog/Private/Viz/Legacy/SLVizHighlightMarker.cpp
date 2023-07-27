@@ -166,7 +166,8 @@ void USLVizHighlightMarker::Set(USkeletalMeshComponent* SkMC, TArray<int32>& Mat
 bool USLVizHighlightMarker::UpdateVisualParameters(const FSLVizHighlightMarkerVisualParams& VisualParams)
 {
 	// Check visual mesh type
-	if (HighlightSMC && HighlightSMC->IsValidLowLevel() && !HighlightSMC->IsPendingKillOrUnreachable())
+	if (HighlightSMC && IsValid(HighlightSMC) && IsValidChecked(HighlightSMC) && !HighlightSMC->IsUnreachable())
+	//if (HighlightSMC && HighlightSMC->IsValidLowLevel() && !HighlightSMC->IsPendingKillOrUnreachable())
 	{
 		SetDynamicMaterial(VisualParams);
 		for (int32 MatIdx = 0; MatIdx < HighlightSMC->GetNumMaterials(); ++MatIdx)
@@ -175,7 +176,8 @@ bool USLVizHighlightMarker::UpdateVisualParameters(const FSLVizHighlightMarkerVi
 		}
 		return true;
 	}
-	else if (HighlightSkelMC && HighlightSkelMC->IsValidLowLevel() && !HighlightSkelMC->IsPendingKillOrUnreachable())
+	else if (HighlightSMC && IsValid(HighlightSMC) && IsValidChecked(HighlightSMC) && !HighlightSMC->IsUnreachable())
+	//else if (HighlightSkelMC && HighlightSkelMC->IsValidLowLevel() && !HighlightSkelMC->IsPendingKillOrUnreachable())
 	{
 		if (SkeletalMaterialIndexes.Num() == 0)
 		{
@@ -276,7 +278,8 @@ bool USLVizHighlightMarker::LoadAssetsContainer()
 bool USLVizHighlightMarker::SetStaticMeshComponent(UStaticMeshComponent* SMC)
 {
 	// Clear materials, or create new component
-	if (HighlightSMC && HighlightSMC->IsValidLowLevel() && !HighlightSMC->IsPendingKillOrUnreachable())
+	if (HighlightSMC && IsValid(HighlightSMC) && IsValidChecked(HighlightSMC) && !HighlightSMC->IsUnreachable())
+	//if (HighlightSMC && HighlightSMC->IsValidLowLevel() && !HighlightSMC->IsPendingKillOrUnreachable())
 	{
 		HighlightSMC->EmptyOverrideMaterials();
 	}
@@ -300,7 +303,8 @@ bool USLVizHighlightMarker::SetStaticMeshComponent(UStaticMeshComponent* SMC)
 // Clear the static mesh component
 void USLVizHighlightMarker::ClearStaticMeshComponent()
 {
-	if (HighlightSMC && HighlightSMC->IsValidLowLevel() && !HighlightSMC->IsPendingKillOrUnreachable())
+	if (HighlightSMC && IsValid(HighlightSMC) && IsValidChecked(HighlightSMC) && !HighlightSMC->IsUnreachable())
+	//if (HighlightSMC && HighlightSMC->IsValidLowLevel() && !HighlightSMC->IsPendingKillOrUnreachable())
 	{
 		//HighlightSMC->ConditionalBeginDestroy();
 		HighlightSMC->DestroyComponent();
@@ -312,7 +316,8 @@ void USLVizHighlightMarker::ClearStaticMeshComponent()
 bool USLVizHighlightMarker::SetSkeletalMeshComponent(USkeletalMeshComponent* SkMC)
 {
 	// Clear materials, or create new component
-	if (HighlightSkelMC && HighlightSkelMC->IsValidLowLevel() && !HighlightSkelMC->IsPendingKillOrUnreachable())
+	if (HighlightSkelMC && IsValid(HighlightSkelMC) && IsValidChecked(HighlightSkelMC) && !HighlightSkelMC->IsUnreachable())
+	//if (HighlightSkelMC && HighlightSkelMC->IsValidLowLevel() && !HighlightSkelMC->IsPendingKillOrUnreachable())
 	{
 		HighlightSkelMC->EmptyOverrideMaterials();
 	}
@@ -328,13 +333,15 @@ bool USLVizHighlightMarker::SetSkeletalMeshComponent(USkeletalMeshComponent* SkM
 	HighlightSkelMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HighlightSkelMC->bSelectable = false;
 
-	return HighlightSkelMC && HighlightSkelMC->IsValidLowLevel() && !HighlightSkelMC->IsPendingKillOrUnreachable();
+	return HighlightSkelMC && IsValid(HighlightSkelMC) && IsValidChecked(HighlightSkelMC) && !HighlightSkelMC->IsUnreachable();
+	//return HighlightSkelMC && HighlightSkelMC->IsValidLowLevel() && !HighlightSkelMC->IsPendingKillOrUnreachable();
 }
 
 // Clear the skeletal mesh component
 void USLVizHighlightMarker::ClearSkeletalMeshComponent()
 {
-	if (HighlightSkelMC && HighlightSkelMC->IsValidLowLevel() && !HighlightSkelMC->IsPendingKillOrUnreachable())
+	if (HighlightSkelMC && IsValid(HighlightSkelMC) && IsValidChecked(HighlightSkelMC) && !HighlightSkelMC->IsUnreachable())
+	//if (HighlightSkelMC && HighlightSkelMC->IsValidLowLevel() && !HighlightSkelMC->IsPendingKillOrUnreachable())
 	{
 		//HighlightSkelMC->ConditionalBeginDestroy();
 		HighlightSkelMC->DestroyComponent();
@@ -346,7 +353,8 @@ void USLVizHighlightMarker::ClearSkeletalMeshComponent()
 // Set the dynamic material
 void USLVizHighlightMarker::SetDynamicMaterial(const FSLVizHighlightMarkerVisualParams& VisualParams)
 {
-	const bool bIsMaterialValid = DynamicMaterial && DynamicMaterial->IsValidLowLevel() && !DynamicMaterial->IsPendingKillOrUnreachable();
+	const bool bIsMaterialValid = DynamicMaterial && IsValid(DynamicMaterial) && IsValidChecked(DynamicMaterial) && !DynamicMaterial->IsUnreachable();
+	//const bool bIsMaterialValid = DynamicMaterial && DynamicMaterial->IsValidLowLevel() && !DynamicMaterial->IsPendingKillOrUnreachable();
 	if (bIsMaterialValid)
 	{
 		const bool bIsValidMaterialOfTheSameType = VisualParams.MaterialType != MaterialType;
@@ -394,7 +402,8 @@ void USLVizHighlightMarker::SetDynamicMaterial(const FSLVizHighlightMarkerVisual
 // Clear the dynamic material
 void USLVizHighlightMarker::ClearDynamicMaterial()
 {
-	if (DynamicMaterial && DynamicMaterial->IsValidLowLevel() && !DynamicMaterial->IsPendingKillOrUnreachable())
+	if (DynamicMaterial && IsValid(DynamicMaterial) && IsValidChecked(DynamicMaterial) && !DynamicMaterial->IsUnreachable())
+	//if (DynamicMaterial && DynamicMaterial->IsValidLowLevel() && !DynamicMaterial->IsPendingKillOrUnreachable())
 	{
 		DynamicMaterial->ConditionalBeginDestroy();
 	}

@@ -295,7 +295,8 @@ void FSLEdUtils::EnableAllMaterialsForInstancedStaticMesh()
 
 	for (FAssetData Data : AllAsset)
 	{
-		if (Data.AssetClass.ToString().Equals(TEXT("Material")))
+		if (Data.AssetClassPath.GetAssetName().ToString().Equals(TEXT("Material")))
+		//if (Data.AssetClass.ToString().Equals(TEXT("Material")))
 		{
 			UMaterial* Material = Cast<UMaterial>(Data.GetAsset());
 			if (!Material->bUsedWithInstancedStaticMeshes)

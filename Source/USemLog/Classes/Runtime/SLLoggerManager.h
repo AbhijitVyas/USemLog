@@ -6,7 +6,9 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Info.h"
 #include "Runtime/SLLoggerStructs.h"
+#include "Knowrob/SLKRRestClient.h"
 #include "SLLoggerManager.generated.h"
+
 
 // Forward declarations
 class ASLWorldStateLogger;
@@ -87,6 +89,21 @@ public:
 	// Get semantic map id
 	FString GetSemanticMapId() const { return LocationParams.SemanticMapId; };
 
+	// Get KnowRobIpAddress
+	FString GetKnowRobIpAddress() const { return LocationParams.KnowRobIpAddress; };
+
+	// Get KnowRobServerPort
+	FString GetKnowRobServerPort() const { return LocationParams.KnowRobServerPort; };
+
+	// Get GamePlayerName
+	FString GetGamePlayerName() const { return LocationParams.GamePlayerName; };
+
+	// Get GamePlayerGender
+	FString GetGamePlayerGender() const { return LocationParams.GamePlayerGender; };
+
+	// Get GamePlayerGge
+	int GetGamePlayerAge() const { return LocationParams.GamePlayerAge; };
+
 	// Get TaskId
 	FString GetTaskId() const { return LocationParams.TaskId; };
 
@@ -139,6 +156,9 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Semantic Logger", meta = (editcondition = "bUseIndependently"))
 	FSLLoggerStartParams StartParams;
 
+	// Call init and start once the world is started, or execute externally
+	bool bCreateNEEM = true;
+
 
 	/* World state logger */
 	// True if the world state should be logged
@@ -177,4 +197,16 @@ private:
 	// Editor button hack to write the task owl file
 	UPROPERTY(EditAnywhere, Category = "Semantic Logger|Edit")
 	bool bWriteTaskButton = false;
+
+	bool isEpisodeCreated = false;
+
+	FSLKRRestClient fSLKRRestClient;
+
+	FString EpisodeIriResponse;
+
+	FString ActionIriResponse;
+
+	// Take IP Address from one of the logger manager settings, it should be the PC IP where KnowRob is running
+	//FString KnowRobServerIPAddress; // = GetKnowRobIpAddress();
+	//FString KnowRobServerPort; // = GetKnowRobServerPort();
 };
