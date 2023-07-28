@@ -23,7 +23,8 @@ ASLPoseableMeshActor::ASLPoseableMeshActor()
 void ASLPoseableMeshActor::SetSkeletalMesh(USkeletalMesh* SkelMesh)
 {
 	// Create the poseable mesh component from the skeletal mesh
-	PoseableMeshComponent->SetSkeletalMesh(SkelMesh);
+	//PoseableMeshComponent->SetSkeletalMesh(SkelMesh);
+	PoseableMeshComponent->SetSkinnedAssetAndUpdate(SkelMesh);
 }
 
 // Setup the poseable mesh from a skeletal mesh actor
@@ -33,7 +34,8 @@ void ASLPoseableMeshActor::SetSkeletalMeshAndPose(ASkeletalMeshActor* SkelMeshAc
 	if (auto* SkelMeshComp = SkelMeshActor->GetSkeletalMeshComponent())
 	{		
 		PoseableMeshComponent->SetWorldTransform(SkelMeshComp->GetComponentTransform());
-		PoseableMeshComponent->SetSkeletalMesh(SkelMeshComp->SkeletalMesh);
+		//PoseableMeshComponent->SetSkeletalMesh(SkelMeshComp->SkeletalMesh);
+		PoseableMeshComponent->SetSkinnedAssetAndUpdate(SkelMeshComp->GetSkeletalMeshAsset());
 	}
 }
 

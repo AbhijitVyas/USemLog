@@ -59,7 +59,8 @@ void USLVizMarker::SetVisual(const FSLVizMarkerVisualParams& VisualParams)
 		else if (VisualParams.SkelMC)
 		{
 			//SkeletalMesh = DuplicateObject<USkeletalMesh>(SkMC->SkeletalMesh, this);
-			SkeletalMesh = VisualParams.SkelMC->SkeletalMesh;
+			//SkeletalMesh = VisualParams.SkelMC->SkeletalMesh;
+			SkeletalMesh = VisualParams.SkelMC->GetSkeletalMeshAsset();
 
 			if (VisualParams.MaterialIndexes.Num() == 0)
 			{
@@ -196,7 +197,8 @@ void USLVizMarker::Init(USkeletalMeshComponent* SkMC)
 	Reset();
 
 	//SkeletalMesh = DuplicateObject<USkeletalMesh>(SkMC->SkeletalMesh, this);
-	SkeletalMesh = SkMC->SkeletalMesh;
+	//SkeletalMesh = SkMC->SkeletalMesh;
+	SkeletalMesh = SkMC->GetSkeletalMeshAsset();
 
 	for (int32 MatIdx = 0; MatIdx < SkMC->GetNumMaterials(); ++MatIdx)
 	{
@@ -213,7 +215,8 @@ void USLVizMarker::Init(USkeletalMeshComponent* SkMC, const FLinearColor& Color,
 	Reset();
 
 	//SkeletalMesh = DuplicateObject<USkeletalMesh>(SkMC->SkeletalMesh, this);
-	SkeletalMesh = SkMC->SkeletalMesh;
+	//SkeletalMesh = SkMC->SkeletalMesh;
+	SkeletalMesh = SkMC->GetSkeletalMeshAsset();
 
 	UMaterialInstanceDynamic* DynMat = bUnlit ? UMaterialInstanceDynamic::Create(MaterialUnlit, NULL) : UMaterialInstanceDynamic::Create(MaterialLit, NULL);
 	DynMat->SetVectorParameterValue(FName("Color"), Color);
@@ -243,7 +246,8 @@ void USLVizMarker::Init(USkeletalMeshComponent* SkMC, int32 MaterialIndex)
 	Reset();
 
 	//SkeletalMesh = DuplicateObject<USkeletalMesh>(SkMC->SkeletalMesh, this);
-	SkeletalMesh = SkMC->SkeletalMesh;
+	//SkeletalMesh = SkMC->SkeletalMesh;
+	SkeletalMesh = SkMC->GetSkeletalMeshAsset();
 
 	//int32 MatIdx = 0;
 	//for (auto M : SkeletalMesh->Materials)
@@ -283,7 +287,8 @@ void USLVizMarker::Init(USkeletalMeshComponent* SkMC, int32 MaterialIndex, const
 	Reset();
 
 	//SkeletalMesh = DuplicateObject<USkeletalMesh>(SkMC->SkeletalMesh, this);
-	SkeletalMesh = SkMC->SkeletalMesh;
+	//SkeletalMesh = SkMC->SkeletalMesh;
+	SkeletalMesh = SkMC->GetSkeletalMeshAsset();
 
 	UMaterialInstanceDynamic* DynMat = bUnlit ? UMaterialInstanceDynamic::Create(MaterialUnlit, NULL) : UMaterialInstanceDynamic::Create(MaterialLit, NULL);
 	DynMat->SetVectorParameterValue(FName("Color"), Color);
@@ -324,7 +329,8 @@ void USLVizMarker::Init(USkeletalMeshComponent* SkMC, TArray<int32>& MaterialInd
 	Reset();
 
 	//SkeletalMesh = DuplicateObject<USkeletalMesh>(SkMC->SkeletalMesh, this);
-	SkeletalMesh = SkMC->SkeletalMesh;
+	//SkeletalMesh = SkMC->SkeletalMesh;
+	SkeletalMesh = SkMC->GetSkeletalMeshAsset();
 
 	//int32 MatIdx = 0;
 	//for (auto M : SkeletalMesh->Materials)
@@ -358,7 +364,8 @@ void USLVizMarker::Init(USkeletalMeshComponent* SkMC, TArray<int32>& MaterialInd
 	Reset();
 
 	//SkeletalMesh = DuplicateObject<USkeletalMesh>(SkMC->SkeletalMesh, this);
-	SkeletalMesh = SkMC->SkeletalMesh;
+	//SkeletalMesh = SkMC->SkeletalMesh;
+	SkeletalMesh = SkMC->GetSkeletalMeshAsset();
 
 	UMaterialInstanceDynamic* DynMat = bUnlit ? UMaterialInstanceDynamic::Create(MaterialUnlit, NULL) : UMaterialInstanceDynamic::Create(MaterialLit, NULL);
 	DynMat->SetVectorParameterValue(FName("Color"), Color);
@@ -577,7 +584,8 @@ UPoseableMeshComponent* USLVizMarker::CreateNewSkeletalInstance()
 {
 	UPoseableMeshComponent* PMC = NewObject<UPoseableMeshComponent>(this);
 	PMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	PMC->SetSkeletalMesh(SkeletalMesh);
+	//PMC->SetSkeletalMesh(SkeletalMesh);
+	PMC->SetSkinnedAssetAndUpdate(SkeletalMesh);
 	PMC->bPerBoneMotionBlur = false;
 //	PMC->bHasMotionBlurVelocityMeshes = false;
 	for (const auto MatPair : SkeletalMaterials)

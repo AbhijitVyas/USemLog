@@ -329,7 +329,8 @@ bool USLVizHighlightMarker::SetSkeletalMeshComponent(USkeletalMeshComponent* SkM
 	}
 
 	// Set the mesh visual
-	HighlightSkelMC->SetSkeletalMesh(SkMC->SkeletalMesh);
+	//HighlightSkelMC->SetSkeletalMesh(SkMC->SkeletalMesh);
+	HighlightSkelMC->SetSkinnedAssetAndUpdate(SkMC->GetSkeletalMeshAsset());
 	HighlightSkelMC->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	HighlightSkelMC->bSelectable = false;
 

@@ -420,12 +420,14 @@ void ASLCVScanner::ScreenshotCapturedCallback(int32 SizeX, int32 SizeY, const TA
 		TArray<FColor> NewImage  = FSLCVUtils::ReplacePixels(InBitmap, FColor::Black, CustomBackgroundColor, CustomBackgroundColorTolerance);
 
 		// Compress the modified image
-		FImageUtils::CompressImageArray(SizeX, SizeY, NewImage, CompressedBitmap);
+		//FImageUtils::CompressImageArray(SizeX, SizeY, NewImage, CompressedBitmap);
+		FImageUtils::ThumbnailCompressImageArray(SizeX, SizeY, NewImage, CompressedBitmap);
 	}
 	else
 	{
 		// Compress the original image
-		FImageUtils::CompressImageArray(SizeX, SizeY, InBitmap, CompressedBitmap);
+		//FImageUtils::CompressImageArray(SizeX, SizeY, InBitmap, CompressedBitmap);
+		FImageUtils::ThumbnailCompressImageArray(SizeX, SizeY, InBitmap, CompressedBitmap);
 	}
 
 	// Check if the image should be stored locally

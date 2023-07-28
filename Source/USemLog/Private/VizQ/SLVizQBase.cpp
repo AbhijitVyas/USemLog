@@ -78,6 +78,7 @@ bool USLVizQBase::IsReadyForManualExecution() const
 	if (KnowrobManager.IsValid() 
 		&& KnowrobManager->IsValidLowLevel() 
 		&& !KnowrobManager->IsPendingKillOrUnreachable())
+		//&& !KnowrobManager->IsUnreachable())
 	{
 
 		/*

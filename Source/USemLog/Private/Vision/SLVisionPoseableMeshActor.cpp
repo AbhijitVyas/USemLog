@@ -31,7 +31,8 @@ bool ASLVisionPoseableMeshActor::Init(ASkeletalMeshActor* SkMA)
 			SetActorTransform(SkMA->GetTransform());
 
 			// Create the poseable mesh component from the skeletal mesh
-			PoseableMeshComponent->SetSkeletalMesh(SkMC->SkeletalMesh);
+			//PoseableMeshComponent->SetSkeletalMesh(SkMC->SkeletalMesh);
+			PoseableMeshComponent->SetSkinnedAssetAndUpdate(SkMC->GetSkeletalMeshAsset());
 
 			bIsInit = true;
 			return true;
