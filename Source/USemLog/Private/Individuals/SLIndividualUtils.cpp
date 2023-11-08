@@ -669,19 +669,19 @@ bool FSLIndividualUtils::ConvertIndividualObject(USLBaseIndividual*& IndividualO
 }
 
 // Generate a new bson oid as string, empty string if fails
-FString FSLIndividualUtils::NewOIdAsString()
-{
-#if SL_WITH_LIBMONGO_C
-	bson_oid_t new_oid;
-	bson_oid_init(&new_oid, NULL);
-	char oid_str[25];
-	bson_oid_to_string(&new_oid, oid_str);
-	return FString(UTF8_TO_TCHAR(oid_str));
-#else
-	return FString();
-#endif // #if PLATFORM_WINDOWS
-	return FString();
-}
+//FString FSLIndividualUtils::NewOIdAsString()
+//{
+//#if SL_WITH_LIBMONGO_C
+//	bson_oid_t new_oid;
+//	bson_oid_init(&new_oid, NULL);
+//	char oid_str[25];
+//	bson_oid_to_string(&new_oid, oid_str);
+//	return FString(UTF8_TO_TCHAR(oid_str));
+//#else
+//	return FString();
+//#endif // #if PLATFORM_WINDOWS
+//	return FString();
+//}
 
 // Find the skeletal data asset for the individual
 USLSkeletalDataAsset* FSLIndividualUtils::FindSkeletalDataAsset(AActor* Owner)
