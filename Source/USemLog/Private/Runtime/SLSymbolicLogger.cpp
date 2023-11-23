@@ -602,9 +602,11 @@ bool ASLSymbolicLogger::IsValidAndLoaded(AActor* Actor)
 		UE_LOG(LogTemp, Error, TEXT("%s::%d Actor not valid.."), *FString(__func__), __LINE__);
 		return false;
 	}
+
+	//The following is deprecated. World belonging is checked during Iterator creation
 	if (!GetWorld()->ContainsActor(Actor))
 	{
-		//UE_LOG(LogTemp, Error, TEXT("%s::%d %s is not from this world.."), *FString(__func__), __LINE__, *Actor->GetName());
+		UE_LOG(LogTemp, Error, TEXT("%s::%d %s is not from this world.."), *FString(__func__), __LINE__, *Actor->GetName());
 		return false;
 	}
 	if (UActorComponent* ActComp = Actor->GetComponentByClass(USLIndividualComponent::StaticClass()))
@@ -627,6 +629,13 @@ void ASLSymbolicLogger::InitContactMonitors()
 	// Init all contact trigger handlers
 	for (TObjectIterator<UShapeComponent> Itr; Itr; ++Itr)
 	{
+		//Skip all objects that do not belong to the current world
+		//TObjectIterator finds also objects and classes of other worlds
+		if (Itr->GetWorld() != GetWorld())
+		{
+			continue;
+		}
+
 		//if (Itr->GetClass()->ImplementsInterface(USLContactMonitorInterface::StaticClass()))
 		if (ISLContactMonitorInterface* ContactMonitor = Cast<ISLContactMonitorInterface>(*Itr))
 		{
@@ -662,6 +671,13 @@ void ASLSymbolicLogger::InitManipulatorContactAndGraspMonitors()
 	// Init all grasp Monitors
 	for (TObjectIterator<USLManipulatorMonitor> Itr; Itr; ++Itr)
 	{
+		//Skip all objects that do not belong to the current world
+		//TObjectIterator finds also objects and classes of other worlds
+		if (Itr->GetWorld() != GetWorld())
+		{
+			continue;
+		}
+
 		if (IsValidAndLoaded(Itr->GetOwner()))
 		{
 			Itr->Init(LoggerParameters.EventsSelection.bGrasp, LoggerParameters.EventsSelection.bManipulatorContact);
@@ -717,6 +733,13 @@ void ASLSymbolicLogger::InitManipulatorGraspFixationMonitors()
 	// Init fixation grasp Monitors
 	for (TObjectIterator<UMCGraspFixation> Itr; Itr; ++Itr)
 	{
+		//Skip all objects that do not belong to the current world
+		//TObjectIterator finds also objects and classes of other worlds
+		if (Itr->GetWorld() != GetWorld())
+		{
+			continue;
+		}
+
 		if (IsValidAndLoaded(Itr->GetOwner()))
 		{
 			// Create a grasp event handler 
@@ -742,6 +765,13 @@ void ASLSymbolicLogger::InitReachAndPreGraspMonitors()
 {
 	for (TObjectIterator<USLReachAndPreGraspMonitor> Itr; Itr; ++Itr)
 	{
+		//Skip all objects that do not belong to the current world
+		//TObjectIterator finds also objects and classes of other worlds
+		if (Itr->GetWorld() != GetWorld())
+		{
+			continue;
+		}
+
 		if (IsValidAndLoaded(Itr->GetOwner()))
 		{
 			Itr->Init();
@@ -775,6 +805,13 @@ void ASLSymbolicLogger::InitManipulatorContainerMonitors()
 {
 	//for (TObjectIterator<USLContainerMonitor> Itr; Itr; ++Itr)
 	//{
+	// //Skip all objects that do not belong to the current world
+	// //TObjectIterator finds also objects and classes of other worlds
+	//if (Itr->GetWorld() != GetWorld())
+	//{
+	//	continue;
+	//}
+	// 
 	//	if (IsValidAndLoaded(Itr->GetOwner()))
 	//	{
 	//		if (Itr->Init())
@@ -802,6 +839,13 @@ void ASLSymbolicLogger::InitPickAndPlaceMonitors()
 {
 	for (TObjectIterator<USLPickAndPlaceMonitor> Itr; Itr; ++Itr)
 	{
+		//Skip all objects that do not belong to the current world
+		//TObjectIterator finds also objects and classes of other worlds
+		if (Itr->GetWorld() != GetWorld())
+		{
+			continue;
+		}
+
 		if (IsValidAndLoaded(Itr->GetOwner()))
 		{
 			Itr->Init();
@@ -908,6 +952,12 @@ void ASLSymbolicLogger::InitSlicingMonitors()
 #if SL_WITH_SLICING
 	for (TObjectIterator<USlicingBladeComponent> Itr; Itr; ++Itr)
 	{
+		//Skip all objects that do not belong to the current world
+		//TObjectIterator finds also objects and classes of other worlds
+		if (Itr->GetWorld() != GetWorld())
+		{
+			continue;
+		}
 		// Make sure the object is in the world
 		if (IsValidAndLoaded(Itr->GetOwner()))
 		{

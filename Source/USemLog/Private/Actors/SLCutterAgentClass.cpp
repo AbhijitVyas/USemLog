@@ -31,7 +31,6 @@ void ASLCutterAgentClass::BeginPlay()
 {
 	Super::BeginPlay();
 	currentWorld = GetWorld();
-	UE_LOG(LogTemp, Error, TEXT("%s::%d %s Init done with result: %s"), *FString(__FUNCTION__), __LINE__, *GetName(), Init() ? TEXT("True") : TEXT("False"));
 
 }
 
@@ -56,9 +55,6 @@ bool ASLCutterAgentClass::Init()
 			return false;
 		}
 
-		// Set the individual object
-		// We are the owner individual object
-		//OwnerIndividualObject = OwnerIndividualComponent->GetIndividualObject();
 		bIsInit = true;
 		return true;
 	}
@@ -150,26 +146,16 @@ void ASLCutterAgentClass::Start()
 }
 
 
-//void ASLCutterAgentClass::OnSLGraspBegin(USLBaseIndividual* Self, USLBaseIndividual* Other, float Time, const FString& GraspType) {
-//	
-//	return;
-//}
-//
-//void ASLCutterAgentClass::OnSLGraspEnd(USLBaseIndividual* Self, USLBaseIndividual* Other, float Time) {
-//	
-//	//CurrGraspedIndividual = nullptr;
-//	return;
-//}
+
 
 
 
 
 bool ASLCutterAgentClass::CuttingStarted(UPARAM(ref) AActor* other) {
-	//Write in Console 
 	
-
+	//Write in Console 
 	if (other == nullptr) {
-		UE_LOG(LogTemp, Error, TEXT("%s::%d Cutting Startedcalled but no other object given to cut"), *FString(__FUNCTION__), __LINE__);
+		UE_LOG(LogTemp, Error, TEXT("%s::%d Cutting Started called but no other object given to cut"), *FString(__FUNCTION__), __LINE__);
 			return false;
 	}
 	UE_LOG(LogTemp, Warning, TEXT("%s::%d Sucessfully started cutting Event"), *FString(__FUNCTION__), __LINE__);
@@ -202,10 +188,11 @@ bool ASLCutterAgentClass::CuttingAborted(UPARAM(ref) AActor* other) {
 		UE_LOG(LogTemp, Error, TEXT("%s::%d Cutting CuttingAborted called but no other object given to cut"), *FString(__FUNCTION__), __LINE__)
 			return false;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("%s::%d Sucessfully aborted cutting Event"), *FString(__FUNCTION__), __LINE__);
 
-	
-	
+	UE_LOG(LogTemp, Display, TEXT("%s::%d Sucessfully aborted cutting Event"), *FString(__FUNCTION__), __LINE__);
+	//We want to track the whole process of cutting. From the start when the object is hit the first time
+	//till the end when the tip of the blade fully went through the body. Therefore it is also possible to abort cutting.
+	//For example when the knife enters the body to be cut and then just leaves it the way it went in.
 
 	USLBaseIndividual* IndividualResult = nullptr;
 
@@ -227,7 +214,7 @@ bool ASLCutterAgentClass::CuttingAborted(UPARAM(ref) AActor* other) {
 
 bool ASLCutterAgentClass::CuttingSucceeded(UPARAM(ref) AActor* other) {
 	//Write in Console 
-	UE_LOG(LogTemp, Warning, TEXT("%s::%d Sucessfully finished cutting Event"), *FString(__FUNCTION__), __LINE__);
+	UE_LOG(LogTemp, Display, TEXT("%s::%d Sucessfully finished cutting Event"), *FString(__FUNCTION__), __LINE__);
 	//Check if the other actor should be ignored and no Events should be logged
 
 	if (other == nullptr) {

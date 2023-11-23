@@ -217,7 +217,7 @@ void ASLLoggerManager::Init()
 	fSLKRRestClient.Init(*GetKnowRobIpAddress(), *GetKnowRobServerPort(), "", *GetGamePlayerName());
 
 	bIsInit = true;
-	UE_LOG(LogTemp, Log, TEXT("%s::%d Logger manager (%s) succesfully initialized at %f.."),
+	UE_LOG(LogTemp, Warning, TEXT("%s::%d Logger manager (%s) succesfully initialized at %f.."),
 		*FString(__FUNCTION__), __LINE__, *GetName(), GetWorld()->GetTimeSeconds());
 }
 
@@ -303,7 +303,7 @@ void ASLLoggerManager::Start()
 	}
 
 	bIsStarted = true;
-	UE_LOG(LogTemp, Log, TEXT("%s::%d Logger manager (%s) succesfully started at %f.."),
+	UE_LOG(LogTemp, Warning, TEXT("%s::%d Logger manager (%s) succesfully started at %f.."),
 		*FString(__FUNCTION__), __LINE__, *GetName(), GetWorld()->GetTimeSeconds());
 }
 

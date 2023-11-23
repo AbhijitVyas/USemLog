@@ -31,17 +31,15 @@ void SLCleaningEventHandler::Start()
 {
 	if (!bIsStarted && bIsInit)
 	{
-
-		UE_LOG(LogTemp, Error, TEXT("CUTTING EVENT HANDLER SUCCESSFULLY STARTED"));
-		//TODO Listen to the events thrown by the cutting Monitor
+		
 		AgentToObserve->CleaningStartedEvent.AddRaw(this, &SLCleaningEventHandler::OnCleaningBegin);
 		AgentToObserve->CleaningEndedEvent.AddRaw(this, &SLCleaningEventHandler::OnCleaningEnd);
 
-		//Parent->OnBeginSLContact.AddRaw(this, &FSLContactEventHandler::OnSLOverlapBegin);
 		bIsStarted = true;
+		//UE_LOG(LogTemp, Log, TEXT("%s::%d Cleaning event handler has been started"), *FString(__FUNCTION__), __LINE__);
 	}
 	else if (bIsInit) {
-		UE_LOG(LogTemp, Error, TEXT("CUTTING EVENT HANDLER WAS NOT Initialized correctly"));
+		UE_LOG(LogTemp, Error, TEXT("%s::%d Cleaning event handler could not be started correctly"), *FString(__FUNCTION__), __LINE__);
 	}
 }
 
@@ -52,9 +50,6 @@ void SLCleaningEventHandler::Finish(float EndTime, bool bForced)
 
 		FinishAllEvents(EndTime);
 
-		// TODO use dynamic delegates to be able to unbind from them
-		// https://docs.unrealengine.com/en-us/Programming/UnrealArchitecture/Delegates/Dynamic
-		// this would mean that the handler will need to inherit from UObject
 
 		// Mark finished
 		bIsStarted = false;
@@ -73,18 +68,15 @@ void SLCleaningEventHandler::FinishAllEvents(float EndTime)
 void SLCleaningEventHandler::OnCleaningBegin(const FSLInteractionResult& cuttingInfo)
 {
 	AddNewSLCleaningEvent(cuttingInfo);
-	UE_LOG(LogTemp, Display, TEXT("Cleaning event Started!!"));
 }
 
 void SLCleaningEventHandler::OnCleaningEnd(USLBaseIndividual* Other, float Time, int32 result)
 {
-	UE_LOG(LogTemp, Display, TEXT("Cleaning event Finished!!"));
 	FinishSLCleaningEvent(Other, Time, static_cast<USLCleaningStatus>(result));
 }
 
 void SLCleaningEventHandler::AddNewSLCleaningEvent(const FSLInteractionResult& cuttingInfo)
 {
-	UE_LOG(LogTemp, Display, TEXT("Cleaning event Handler received event started"));
 
 	TSharedPtr<FSLCleaningEvent> Event = MakeShareable(new FSLCleaningEvent(
 		FSLUuid::NewGuidInBase64Url(), cuttingInfo.Time,
@@ -105,7 +97,6 @@ bool SLCleaningEventHandler::FinishSLCleaningEvent(USLBaseIndividual* InOther, f
 		// It is enough to compare against the other id when searching 
 		if ((*EventItr)->Individual2 == InOther)
 		{
-			UE_LOG(LogTemp, Display, TEXT("Cutting event event Handler received event finished"));
 			// Set the event end time
 			(*EventItr)->EndTime = EndTime;
 

@@ -36,16 +36,15 @@ void SLCuttingEventHandler::Start()
 	if (!bIsStarted && bIsInit)
 	{
 
-		UE_LOG(LogTemp, Error, TEXT("CUTTING EVENT HANDLER SUCCESSFULLY STARTED"));
-		//TODO Listen to the events thrown by the cutting Monitor
 		AgentToObserve->CuttingStartedEvent.AddRaw(this, &SLCuttingEventHandler::OnCuttingBegin);
 		AgentToObserve->CuttingEndedEvent.AddRaw(this, &SLCuttingEventHandler::OnCuttingEnd);
 
-			//Parent->OnBeginSLContact.AddRaw(this, &FSLContactEventHandler::OnSLOverlapBegin);
 		bIsStarted = true;
+		//UE_LOG(LogTemp, Log, TEXT("%s::%d Cutting event handler has been started"), *FString(__FUNCTION__), __LINE__);
 	}
 	else if (bIsInit) {
-		UE_LOG(LogTemp, Error, TEXT("CUTTING EVENT HANDLER WAS NOT Initialized correctly"));
+		UE_LOG(LogTemp, Error, TEXT("%s::%d Cutting event handler could not be started correctly"), * FString(__FUNCTION__), __LINE__);
+	
 	}
 }
 
@@ -79,13 +78,11 @@ void SLCuttingEventHandler::FinishAllEvents(float EndTime)
 void SLCuttingEventHandler::OnCuttingBegin(const FSLInteractionResult& cuttingInfo)
 {
 	AddNewSLCuttingEvent(cuttingInfo);
-	UE_LOG(LogTemp, Display, TEXT("Cutting event Started!!"));
 }
 
 void SLCuttingEventHandler::OnCuttingEnd(USLBaseIndividual* Other, float Time, int32 result)
 {
 
-	UE_LOG(LogTemp, Display, TEXT("Cutting event Finished!!"));
 	FinishSLCuttingEvent(Other, Time, static_cast<USLCuttingInfo>(result));
 }
 
@@ -97,7 +94,6 @@ void SLCuttingEventHandler::OnCuttingEnd(USLBaseIndividual* Other, float Time, i
 // Start new Cutting event
 void SLCuttingEventHandler::AddNewSLCuttingEvent(const FSLInteractionResult& cuttingInfo)
 {
-	UE_LOG(LogTemp, Display, TEXT("Cutting event Handler received event started"));
 	//AStaticMeshActor* ASLCutter = Cast<AStaticMeshActor>(InResult.Self);
 	//UActorComponent* comp = GetComponentByClass(ASLCutter::StaticClass());
 	//if (InResult.Other->GetClass() == USLParticleIndividual::StaticClass();
@@ -134,7 +130,6 @@ bool SLCuttingEventHandler::FinishSLCuttingEvent(USLBaseIndividual* InOther, flo
 		// It is enough to compare against the other id when searching 
 		if ((*EventItr)->Individual2 == InOther)
 		{
-			UE_LOG(LogTemp, Display, TEXT("Cutting event event Handler received event finished"));
 			// Set the event end time
 			(*EventItr)->EndTime = EndTime;
 
