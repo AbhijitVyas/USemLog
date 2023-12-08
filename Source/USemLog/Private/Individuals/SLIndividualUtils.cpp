@@ -6,7 +6,7 @@
 #include "Individuals/Type/SLIndividualTypes.h"
 
 #include "Skeletal/SLSkeletalDataAsset.h"
-#include "AssetRegistryModule.h" // FindSkeletalDataAsset
+#include "AssetRegistry/AssetRegistryModule.h" // FindSkeletalDataAsset
 #include "EngineUtils.h"
 
 #include "Engine/StaticMeshActor.h"

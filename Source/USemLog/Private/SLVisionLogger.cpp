@@ -14,8 +14,8 @@
 #include "Engine/GameViewportClient.h"
 #include "HighResScreenshot.h"
 #include "ImageUtils.h"
-#include "Async.h"
-#include "FileHelper.h"
+#include "Async/Async.h"
+#include "Misc/FileHelper.h"
 
 // Constructor
 USLVisionLogger::USLVisionLogger() : bIsInit(false), bIsStarted(false), bIsFinished(false), bIsPaused(false)

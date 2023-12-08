@@ -7,7 +7,7 @@
 #include "Misc/Paths.h"
 
 #if WITH_EDITOR
-#include "AssetRegistryModule.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #endif // WITH_EDITOR
 
 // Ctor

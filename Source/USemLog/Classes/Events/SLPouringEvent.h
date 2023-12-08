@@ -4,6 +4,7 @@
 #pragma once
 
 #include "ISLEvent.h"
+#include <tuple> // for tuple
 
 // Forward declarations
 class USLBaseIndividual;
@@ -23,12 +24,14 @@ public:
 
 	// Constructor with initialization
 	FSLPouringEvent(const FString& InId, float InStart, float InEnd, uint64 InPairId,
-		USLBaseIndividual* InIndividual1, USLBaseIndividual* InIndividual2, USLPouringEventTypes PouringEventTypes);
+		USLBaseIndividual* InIndividual1, USLBaseIndividual* InIndividual2, USLPouringEventTypes PouringEventType);
 
 	// Constructor initialization without end time
 	FSLPouringEvent(const FString& InId, const float InStart, const uint64 InPairId,
-		USLBaseIndividual* InIndividual1, USLBaseIndividual* InIndividual2, USLPouringEventTypes PouringEventTypes);
+		USLBaseIndividual* InIndividual1, USLBaseIndividual* InIndividual2, USLPouringEventTypes PouringEventType);
 	
+	FString CreateAdditionalInfoForPouringEvent() const;
+
 	// Pair id of the event (combination of two unique runtime ids)
 	uint64 PairId;
 
@@ -41,6 +44,13 @@ public:
 	USLPouringEventTypes PouringEventTypes;
 
 	int NumberOfParticles = 0;
+
+	FString SourceContainerName;
+	FString DestinationContainerName;
+	
+
+	TArray<FTransform> PouringPoseForSourceContainer;
+	TArray<FTransform> PouringPoseForDestinationContainer;
 
 	/* Begin IEvent interface */
 	// Create an owl representation of the event
@@ -64,4 +74,7 @@ public:
 	// Get the event type name
 	virtual FString TypeName() const override { return FString(TEXT("Pouring")); };
 	/* End IEvent interface */
+
+	// Create REST call to KnowRob
+	virtual FString RESTCallToKnowRob(FSLKRRestClient* InFSLKRRestClient) const override;
 };

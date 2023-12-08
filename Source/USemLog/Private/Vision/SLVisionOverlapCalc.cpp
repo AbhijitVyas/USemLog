@@ -11,8 +11,8 @@
 #include "Engine/GameViewportClient.h"
 #include "HighResScreenshot.h"
 #include "ImageUtils.h"
-#include "Async.h"
-#include "FileHelper.h"
+#include "Async/Async.h"
+#include "Misc/FileHelper.h"
 
 #include "Vision/SLVisionStructs.h"
 //#include "Skeletal/SLSkeletalDataComponent.h"

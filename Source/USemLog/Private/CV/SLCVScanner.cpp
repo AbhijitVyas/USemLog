@@ -11,10 +11,10 @@
 #include "Engine/StaticMeshActor.h"
 #include "Materials/Material.h"
 #include "Materials/MaterialInstanceDynamic.h"
-#include "Async.h"
+#include "Async/Async.h"
 #include "HighResScreenshot.h"
 #include "ImageUtils.h"
-#include "FileHelper.h"
+#include "Misc/FileHelper.h"
 
 #include "Engine.h"
 #include "Engine/PostProcessVolume.h"

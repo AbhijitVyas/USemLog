@@ -6,7 +6,8 @@
 #include "Events/SLSupportedByEvent.h"
 #include "Individuals/Type/SLBaseIndividual.h"
 #include "Utils/SLUuid.h"
-#include "./SLPouringParticleAgentClass.h"
+#include "Actors/SLPouringParticleAgentClass.h"
+#include "Monitors/SLContactMonitorBox.h"
 #include "Engine/World.h"
 
 // Set parent
@@ -15,7 +16,7 @@ void FSLPouringEventHandler::Init(UObject* InParent)
 	if (!bIsInit)
 	{
 		// Check if parent is of right type
-		/*Parent = Cast<USLPouringMonitor>(InParent);
+		/*Parent = Cast<USLContactMonitorBox>(InParent);
 		if (Parent)
 		{
 			bIsInit = true;

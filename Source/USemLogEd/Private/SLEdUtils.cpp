@@ -3,7 +3,7 @@
 
 #include "SLEdUtils.h"
 #include "EngineUtils.h"
-#include "AssetRegistryModule.h" // material search for InstancedStaticMesh
+#include "AssetRegistry/AssetRegistryModule.h" // material search for InstancedStaticMesh
 
 // SL
 #include "Editor/SLSemanticMapWriter.h"
