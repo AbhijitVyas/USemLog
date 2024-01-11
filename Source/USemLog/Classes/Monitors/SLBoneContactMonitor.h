@@ -188,6 +188,14 @@ public:
 	FSLBoneOverlapBeginSignature OnBeginContactBoneOverlap;
 	FSLBoneOverlapEndSignature OnEndContactBoneOverlap;
 
+	// Adds the possibility to disable Bone Monitors via code or in the editor prior start
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Semantic Logger")
+	bool bIsEnabled  = true;
+	
+	// If the owner is not a skeletal actor, one needs to add the children (fingers) manually
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Semantic Logger")
+	bool bIsNotSkeletal;
+
 private:
 	// Candidate check update rate
 	UPROPERTY(EditAnywhere, Category = "Semantic Logger")
@@ -196,6 +204,7 @@ private:
 	// Candidate check update rate
 	UPROPERTY(EditAnywhere, Category = "Semantic Logger")
 	uint8 bLogGraspDebug : 1;
+
 
 	// True if initialized
 	uint8 bIsInit : 1;
@@ -226,6 +235,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Semantic Logger")
 	FName BoneName;
 
+	// Optional name of the socket it should attach to if wanted
+	UPROPERTY(EditAnywhere, Category = "Semantic Logger")
+	FName SocketName = NAME_None;
+
 	// Snap to the position of the bone when attached
 	UPROPERTY(EditAnywhere, Category = "Semantic Logger")
 	bool bSnapToBone;
@@ -236,9 +249,7 @@ private:
 	bool bAttachButton;
 #endif // WITH_EDITORONLY_DATA
 
-	// If the owner is not a skeletal actor, one needs to add the children (fingers) manually
-	UPROPERTY(EditAnywhere, Category = "Semantic Logger")
-	bool bIsNotSkeletal;
+	
 
 	// Explicit references to the other fingers (ignore them during overlap)
 	UPROPERTY(EditAnywhere, Category = "Semantic Logger", meta = (editcondition = "bIsNotSkeletal"))

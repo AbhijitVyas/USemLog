@@ -114,6 +114,24 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Semantic Logger")
 	void setAxisOverwriteValue(float axisOverwrite);
 
+	//Overwrite the axis input. Enabling to let the grab react to other events or values. Compares against InputAxisOverwriteValue then. 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Semantic Logger")
+	bool bOverwriteInputAxisInput;
+
+	//Overwrite On OverlapEnd. Enabling it will cause items to be released when the Input axis value (overwritten or not) falls below the threshold.
+	//This ignores the case when the collision ends
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Semantic Logger")
+	bool bOverwriteCollisonEndDetection;
+
+	//Get the axis Threshhold
+	UFUNCTION(BlueprintCallable, Category = "Semantic Logger")
+	float GetInputAxisTriggerThresholdValue() {return InputAxisTriggerThresholdValue;}
+
+	//Get the grasped Individual Litst
+	UFUNCTION(BlueprintCallable, Category = "Semantic Logger")
+	void RemoveGraspedIndividuals() { GraspedIndividuals.Empty(5); }
+
+
 protected:
 #if WITH_EDITOR
 	// Called when a property is changed in the editor
@@ -170,7 +188,9 @@ private:
 	// A grasp has started
 	void GraspStarted(USLBaseIndividual* OtherIndividual);
 	
-	// A grasp has ended
+
+	// A grasp has ended (Bueprint callable to manually end grasp. This to prefent hitbox jittering)
+	UFUNCTION(BlueprintCallable, Category = "Semantic Logger")
 	void GraspEnded(USLBaseIndividual* OtherIndividual);
 
 	// Delayed call of sending the finished event to check for possible concatenation of jittering events of the same type
@@ -242,6 +262,10 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Semantic Logger")
 	uint8 bIgnore : 1;
 
+	// Skip Jittercheck and immediately call delayed grasp callback for more smooth interactions and less errors
+	UPROPERTY(EditAnywhere, Category = "Semantic Logger")
+	uint8 bSkipJittercheck : 1;
+
 	// True if initialized
 	uint8 bIsInit : 1;
 
@@ -270,9 +294,7 @@ private:
 	ESLGraspHandType HandType;
 #endif // WITH_EDITORONLY_DATA
 	
-	//Overwrite the axis input. Enabling to let the grab react to other events or values. Compares against InputAxisOverwriteValue then. 
-	UPROPERTY(EditAnywhere, Category = "Semantic Logger")
-	bool bOverwriteInputAxisInput;
+	
 
 	// Input axis to listen for grasp events
 	UPROPERTY(EditAnywhere, Category = "Semantic Logger", meta = (editcondition = "!bOverwriteInputAxisInput"))
@@ -327,6 +349,9 @@ private:
 
 	// Individuals currently grasped
 	TSet<USLBaseIndividual*> GraspedIndividuals;
+
+	// Individuals currently grasped
+	//USLBaseIndividual* GraspedIndividual;
 
 	// Individuals in contact with group A
 	TMap<USLBaseIndividual*, int32> GroupANumGraspContacts;

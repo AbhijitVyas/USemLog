@@ -349,11 +349,12 @@ bool USLManipulatorMonitor::LoadBoneMonitorGroups()
 		for (UActorComponent* GraspOverlapComp : GraspOverlaps)
 		{
 			USLBoneContactMonitor* GraspOverlap = CastChecked<USLBoneContactMonitor>(GraspOverlapComp);
-			if (GraspOverlap->GetGroup() == ESLBoneContactGroup::A)
+			//Only add activated BoneMonitors
+			if (GraspOverlap->bIsEnabled && GraspOverlap->GetGroup() == ESLBoneContactGroup::A)
 			{
 				BoneMonitorsGroupA.Add(GraspOverlap);
 			}
-			else if (GraspOverlap->GetGroup() == ESLBoneContactGroup::B)
+			else if (GraspOverlap->bIsEnabled && GraspOverlap->GetGroup() == ESLBoneContactGroup::B)
 			{
 				BoneMonitorsGroupB.Add(GraspOverlap);
 			}
@@ -550,6 +551,8 @@ void USLManipulatorMonitor::GraspInputAxisCallback(float Value)
 	}
 }
 
+
+
 //When Axis input is overwritten and the new value is greater than the threshold initiate Grasp detection till the value falls below the threshhold
 void USLManipulatorMonitor::setAxisOverwriteValue(float axisOverwrite)
 {
@@ -594,10 +597,14 @@ void USLManipulatorMonitor::OnGroupAGraspContactBegin(USLBaseIndividual* OtherIn
 
 		// Make sure the individual is not already grasped
 		if (GraspedIndividuals.Contains(OtherIndividual))
+		//if (GraspedIndividual == OtherIndividual)
 		{
-			UE_LOG(LogTemp, Error, TEXT("%s::%d::%.4f %s::%s \t\t GroupA: %s is already grasped, this should not happen.."),
-				*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
-				*GetOwner()->GetName(), *GetOwner()->GetName(), *OtherIndividual->GetParentActor()->GetName());
+			//When we control the collision end mechanisms it is possible to reenter the hitbox of an object without releasing it therefore it is already grabbed and we should abort
+			if (!bOverwriteCollisonEndDetection) {
+				UE_LOG(LogTemp, Error, TEXT("%s::%d::%.4f %s::%s \t\t GroupA: %s is already grasped, this should not happen.."),
+					*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
+					*GetOwner()->GetName(), *GetOwner()->GetName(), *OtherIndividual->GetParentActor()->GetName());
+			}
 			return;
 		}
 
@@ -658,10 +665,14 @@ void USLManipulatorMonitor::OnGroupBGraspContactBegin(USLBaseIndividual* OtherIn
 
 		// Make sure the individual is not already grasped
 		if (GraspedIndividuals.Contains(OtherIndividual))
+		//if (GraspedIndividual == OtherIndividual)
 		{
-			UE_LOG(LogTemp, Error, TEXT("%s::%d::%.4f %s::%s \t\t GroupB: %s is already grasped, this should not happen.."),
-				*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
-				*GetOwner()->GetName(), *GetOwner()->GetName(), *OtherIndividual->GetParentActor()->GetName());
+			//When we control the collision end mechanisms it is possible to reenter the hitbox of an object without releasing it therefore it is already grabbed and we should abort
+			if (!bOverwriteCollisonEndDetection) {
+				UE_LOG(LogTemp, Error, TEXT("%s::%d::%.4f %s::%s \t\t GroupB: %s is already grasped, this should not happen.."),
+					*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
+					*GetOwner()->GetName(), *GetOwner()->GetName(), *OtherIndividual->GetParentActor()->GetName());
+			}
 			return;
 		}
 
@@ -726,6 +737,7 @@ void USLManipulatorMonitor::OnGroupAGraspContactEnd(USLBaseIndividual* OtherIndi
 			if (GroupBNumGraspContacts.Contains(OtherIndividual))
 			{
 				// Make sure the individual is grasped
+				//if (GraspedIndividual == OtherIndividual)
 				if (GraspedIndividuals.Contains(OtherIndividual))
 				{
 					if (bLogVerboseGraspDebug)
@@ -734,14 +746,18 @@ void USLManipulatorMonitor::OnGroupAGraspContactEnd(USLBaseIndividual* OtherIndi
 							*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
 							*GetOwner()->GetName(), *GetOwner()->GetName(), *OtherIndividual->GetParentActor()->GetName());
 					}
-					// Trigger grasp end event
-					GraspEnded(OtherIndividual);
+					// Trigger grasp end event when not overwriting manual end
+					if (!bOverwriteCollisonEndDetection) {
+						GraspEnded(OtherIndividual);
+					}
 				}
 				else
 				{
-					UE_LOG(LogTemp, Error, TEXT("%s::%d::%.4f %s::%s \t\t GroupA: %s is NOT grasped, this should not happen.."),
+					//Nowadays this is okay since the object could be taken from the other hand (Experimental)
+					//Therefore it is possible to touch the other group without being grasped
+					/*UE_LOG(LogTemp, Error, TEXT("%s::%d::%.4f %s::%s \t\t GroupA: %s is NOT grasped, this should not happen.."),
 						*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
-						*GetOwner()->GetName(), *GetOwner()->GetName(), *OtherIndividual->GetParentActor()->GetName());
+						*GetOwner()->GetName(), *GetOwner()->GetName(), *OtherIndividual->GetParentActor()->GetName());*/
 				}
 			}
 		}
@@ -777,6 +793,8 @@ void USLManipulatorMonitor::OnGroupBGraspContactEnd(USLBaseIndividual* OtherIndi
 			// Remove individual from group
 			GroupBNumGraspContacts.Remove(OtherIndividual);
 
+			
+
 			if (bLogVerboseGraspDebug)
 			{
 				UE_LOG(LogTemp, Warning, TEXT("%s::%d \t\t %.4f %s::%s \t\t GroupB: %s last contact with the group.."),
@@ -795,6 +813,7 @@ void USLManipulatorMonitor::OnGroupBGraspContactEnd(USLBaseIndividual* OtherIndi
 			{
 				// Make sure the individual is grasped
 				if (GraspedIndividuals.Contains(OtherIndividual))
+				//if (GraspedIndividual == OtherIndividual)
 				{
 					if (bLogVerboseGraspDebug)
 					{
@@ -802,14 +821,19 @@ void USLManipulatorMonitor::OnGroupBGraspContactEnd(USLBaseIndividual* OtherIndi
 							*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
 							*GetOwner()->GetName(), *GetOwner()->GetName(), *OtherIndividual->GetParentActor()->GetName());
 					}
-					// Trigger grasp end event
-					GraspEnded(OtherIndividual);
+					// Trigger grasp end event if the overwrite is not set
+					if (!bOverwriteCollisonEndDetection) {
+						GraspEnded(OtherIndividual);
+					}
 				}
 				else
 				{
-					UE_LOG(LogTemp, Error, TEXT("%s::%d::%.4f %s::%s \t\t GroupB: %s is NOT grasped, this should not happen.."),
+
+					//Nowadays this is okay since the object could be taken from the other hand (Experimental)
+					//Therefore it is possible to touch the other group without being grasped
+					/*UE_LOG(LogTemp, Error, TEXT("%s::%d::%.4f %s::%s \t\t GroupB: %s is NOT grasped, this should not happen.."),
 						*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
-						*GetOwner()->GetName(), *GetOwner()->GetName(), *OtherIndividual->GetParentActor()->GetName());
+						*GetOwner()->GetName(), *GetOwner()->GetName(), *OtherIndividual->GetParentActor()->GetName());*/
 					return;
 				}
 			}
@@ -856,8 +880,40 @@ void USLManipulatorMonitor::UnbindGraspContactCallbacks()
 // A grasp has started
 void USLManipulatorMonitor::GraspStarted(USLBaseIndividual* OtherIndividual)
 {
+	/*UE_LOG(LogTemp, Error, TEXT("%s::%d \t %.4fs \t\t Grasp Started called: \t\t %s::%s->%s;"),
+		*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
+		*GetOwner()->GetName(), *GetName(), *OtherIndividual->GetParentActor()->GetName());*/
 	// Check if it is a new grasp event, or a concatenation with a previous one, either way, there is a new grasp
-	GraspedIndividuals.Emplace(OtherIndividual);
+
+	// If we overwrite the collision end we need to take care of the TSet
+	if (bOverwriteCollisonEndDetection) {
+		if (GraspedIndividuals.Num() == 0) {
+			GraspedIndividuals.Emplace(OtherIndividual);
+		}
+		else {
+			//Ignore this Grasp collision
+			//USLBaseIndividual* g = GraspedIndividuals.Array()[0];
+			//if (g == OtherIndividual) {
+			//	//do nothing
+			//}
+			//else {
+			//	// since we can only hold 1 item release the other
+			//	GraspEnded(g);
+			//	GraspedIndividuals.Emplace(OtherIndividual);
+			//}
+			return;
+		}
+	}
+	else {
+		GraspedIndividuals.Emplace(OtherIndividual);
+	}
+
+	/*UE_LOG(LogTemp, Error, TEXT("%s::%d \t %.4fs \t\t Grasp Succeeded: \t\t %s::%s->%s;"),
+		*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
+		*GetOwner()->GetName(), *GetName(), *OtherIndividual->GetParentActor()->GetName());*/
+
+	
+	//GraspedIndividual = OtherIndividual;
 	if(!IsAJitterGrasp(OtherIndividual, GetWorld()->GetTimeSeconds()))
 	{
 		if (bLogGraspDebug)
@@ -866,6 +922,10 @@ void USLManipulatorMonitor::GraspStarted(USLBaseIndividual* OtherIndividual)
 				*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
 				*GetOwner()->GetName(), *GetName(), *OtherIndividual->GetParentActor()->GetName());
 		}
+
+		/*UE_LOG(LogTemp, Warning, TEXT("%s::%d \t %.4fs \t\t Grasp Started ( !!! broadcast !!! ): \t\t %s::%s->%s;"),
+			*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
+			*GetOwner()->GetName(), *GetName(), *OtherIndividual->GetParentActor()->GetName());*/
 
 		// Broadcast grasp event
 		OnBeginManipulatorGrasp.Broadcast(OwnerIndividualObject, OtherIndividual, GetWorld()->GetTimeSeconds(), ActiveGraspType);
@@ -887,10 +947,17 @@ void USLManipulatorMonitor::GraspStarted(USLBaseIndividual* OtherIndividual)
 	}
 }
 
+
+
 // A grasp has ended
 void USLManipulatorMonitor::GraspEnded(USLBaseIndividual* OtherIndividual)
 {
+	UE_LOG(LogTemp, Error, TEXT("%s::%d \t %.4fs \t\t Grasp Ended called: \t\t %s::%s->%s;"),
+		*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
+		*GetOwner()->GetName(), *GetName(), *OtherIndividual->GetParentActor()->GetName());
+
 	if (GraspedIndividuals.Remove(OtherIndividual) > 0)
+	//if (GraspedIndividual != nullptr)
 	{
 		if (bLogGraspDebug)
 		{
@@ -898,6 +965,10 @@ void USLManipulatorMonitor::GraspEnded(USLBaseIndividual* OtherIndividual)
 				*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
 				*GetOwner()->GetName(), *GetName(), *OtherIndividual->GetParentActor()->GetName());
 		}
+
+		/*UE_LOG(LogTemp, Error, TEXT("%s::%d \t %.4fs \t\t Grasp Ended : \t\t %s::%s->%s;"),
+			*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
+			*GetOwner()->GetName(), *GetName(), *OtherIndividual->GetParentActor()->GetName());*/
 
 		// Grasp ended
 		RecentlyEndedGraspEvents.Emplace(FSLGraspEndEvent(OtherIndividual, GetWorld()->GetTimeSeconds()));
@@ -907,11 +978,17 @@ void USLManipulatorMonitor::GraspEnded(USLBaseIndividual* OtherIndividual)
 		// Delay publishing for a while, in case the new event is of the same type and should be concatenated
 		if(!GetWorld()->GetTimerManager().IsTimerActive(GraspDelayTimerHandle))
 		{
-			const float DelayValue = GraspConcatenateIfSmaller + ConcatenateIfSmallerDelay;
-			GetWorld()->GetTimerManager().SetTimer(GraspDelayTimerHandle, this,
-				&USLManipulatorMonitor::DelayedGraspEndCallback, DelayValue, false);
+			//Check whether we should delay grasp end callbacks or not
+			
+			if (bSkipJittercheck) {
+				DelayedGraspEndCallback();
+			}
+			else {
+				const float DelayValue = GraspConcatenateIfSmaller + ConcatenateIfSmallerDelay;
+				GetWorld()->GetTimerManager().SetTimer(GraspDelayTimerHandle, this,
+					&USLManipulatorMonitor::DelayedGraspEndCallback, DelayValue, false);
+			}
 		}
-
 		//Lets do not delay the BP events since deattaching the object relies on it and it would cause a delayed letting of an item
 		OnEndManipulatorGraspBP.Broadcast(OwnerIndividualObject, OtherIndividual, GetWorld()->GetTimeSeconds());
 
@@ -919,8 +996,15 @@ void USLManipulatorMonitor::GraspEnded(USLBaseIndividual* OtherIndividual)
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s::%d %s->%s is not registered, this should not happen.."),
-			*FString(__FUNCTION__), __LINE__, *GetOwner()->GetName(), *OtherIndividual->GetParentActor()->GetName());
+		//If we are in overwrite mode it can be possible that a grab ended two times (Example one hand takes an item of the other hand:
+		// 1. call when the object is taken. Then Grasp ended is called on the former holder. When the former holder then opens the hand this might me called a second time.
+		// Since this is no problem it does not to be logged at all)
+		if (!bOverwriteCollisonEndDetection) {
+			if (OtherIndividual != nullptr) {
+				UE_LOG(LogTemp, Error, TEXT("%s::%d %s->%s is not registered, this should not happen.."),
+					*FString(__FUNCTION__), __LINE__, *GetOwner()->GetName(), *OtherIndividual->GetParentActor()->GetName());
+			}
+		}
 	}
 }
 
@@ -932,8 +1016,8 @@ void USLManipulatorMonitor::DelayedGraspEndCallback()
 	
 	for (auto EvItr(RecentlyEndedGraspEvents.CreateIterator()); EvItr; ++EvItr)
 	{
-		// If enough time has passed, publish the event
-		if(CurrTime - EvItr->Time > GraspConcatenateIfSmaller)
+		// If we want to skip jitter check or enough time has passed, publish the event
+		if(bSkipJittercheck || CurrTime - EvItr->Time > GraspConcatenateIfSmaller)
 		{
 			if (bLogGraspDebug)
 			{
@@ -969,6 +1053,10 @@ void USLManipulatorMonitor::DelayedGraspEndCallback()
 // Check if this begin event happened right after the previous one ended, if so remove it from the array, and cancel publishing the begin event
 bool USLManipulatorMonitor::IsAJitterGrasp(USLBaseIndividual* OtherIndividual, float StartTime)
 {
+	//When we want to skip the jittercheck just return false because we do not want to concanate the events
+	if (bSkipJittercheck) {
+		return false;
+	}
 	for (auto EvItr(RecentlyEndedGraspEvents.CreateIterator()); EvItr; ++EvItr)
 	{
 		// Check if it is an event between the same entities

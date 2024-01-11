@@ -161,64 +161,85 @@ void ASLLoggerManager::Init()
 {
 	if (bIsInit)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("%s::%d Logger manager (%s) is already initialized.."), *FString(__FUNCTION__), __LINE__, *GetName());
+		UE_LOG(LogTemp, Error, TEXT("%s::%d Logger manager (%s) is already initialized.."), *FString(__FUNCTION__), __LINE__, *GetName());
 		return;
 	}
 
+	bool worldStateInited;
 	if (bLogWorldState)
 	{
 		if (!SetWorldStateLogger())
 		{
-			UE_LOG(LogTemp, Error, TEXT("%s::%d Logger manager (%s) could not set the world state logger, aborting init.."),
+			UE_LOG(LogTemp, Error, TEXT("%s::%d Logger manager (%s) could not set the world state logger, aborting init of WorldSateLogger"),
 				*FString(__FUNCTION__), __LINE__, *GetName());
-			return;
+			//return;
 		}
 		else if(WorldStateLogger->IsRunningIndependently())
 		{
-			UE_LOG(LogTemp, Error, TEXT("%s::%d Logger manager (%s) world state logger (%s) is running independently, aborting init.."),
+			UE_LOG(LogTemp, Warning, TEXT("%s::%d Logger manager (%s) world state logger (%s) is running independently, aborting init of WorldSateLogger"),
 				*FString(__FUNCTION__), __LINE__, *GetName(), *WorldStateLogger->GetName());
-			return;
+			//return;
 		}
-
-		WorldStateLogger->Init(WorldStateLoggerParams, LocationParams, DBServerParams);
-		if (!WorldStateLogger->IsInit())
-		{
-			UE_LOG(LogTemp, Error, TEXT("%s::%d Logger manager (%s) world state logger (%s) could not be init, aborting init.."),
-				*FString(__FUNCTION__), __LINE__, *GetName(), *WorldStateLogger->GetName());
-			return;
+		else {
+			WorldStateLogger->Init(WorldStateLoggerParams, LocationParams, DBServerParams);
+			if (!WorldStateLogger->IsInit())
+			{
+				UE_LOG(LogTemp, Error, TEXT("%s::%d Logger manager (%s) world state logger (%s) could not be init, aborting init of WorldSateLogger"),
+					*FString(__FUNCTION__), __LINE__, *GetName(), *WorldStateLogger->GetName());
+				//return;
+			}
+			else {
+				worldStateInited = true;
+			}
 		}
 	}
 
+	bool symbolicInited;
 	if (bLogActionsAndEvents)
 	{
 		if (!SetSymbolicLogger())
 		{
-			UE_LOG(LogTemp, Error, TEXT("%s::%d Logger manager (%s) could not set the symbolic logger, aborting init.."),
+			UE_LOG(LogTemp, Error, TEXT("%s::%d Logger manager (%s) could not set the symbolic logger, aborting init of SymbolicLogger"),
 				*FString(__FUNCTION__), __LINE__, *GetName());
-			return;
+			//return;
 		}
 		else if (SymbolicLogger->IsRunningIndependently())
 		{
-			UE_LOG(LogTemp, Error, TEXT("%s::%d Logger manager (%s) symbolic logger (%s) is running independently, aborting init.."),
+			UE_LOG(LogTemp, Warning, TEXT("%s::%d Logger manager (%s) symbolic logger (%s) is running independently, aborting init of SymbolicLogger"),
 				*FString(__FUNCTION__), __LINE__, *GetName(), *SymbolicLogger->GetName());
-			return;
+			//return;
 		}
-
-		SymbolicLogger->Init(SymbolicLoggerParams, LocationParams);
-		if (!SymbolicLogger->IsInit())
-		{
-			UE_LOG(LogTemp, Error, TEXT("%s::%d Logger manager (%s) symbolic logger (%s) could not be init, aborting init.."),
-				*FString(__FUNCTION__), __LINE__, *GetName(), *SymbolicLogger->GetName());
-			return;
+		else {
+			SymbolicLogger->Init(SymbolicLoggerParams, LocationParams);
+			if (!SymbolicLogger->IsInit())
+			{
+				UE_LOG(LogTemp, Error, TEXT("%s::%d Logger manager (%s) symbolic logger (%s) could not be init, aborting init of SymbolicLogger"),
+					*FString(__FUNCTION__), __LINE__, *GetName(), *SymbolicLogger->GetName());
+				//return;
+			}
+			else {
+				symbolicInited = true;
+			}
 		}
 	}
 
 	// initialize fSLKRRestClient with URL parameters
 	fSLKRRestClient.Init(*GetKnowRobIpAddress(), *GetKnowRobServerPort(), "", *GetGamePlayerName());
 
+
 	bIsInit = true;
 	UE_LOG(LogTemp, Warning, TEXT("%s::%d Logger manager (%s) succesfully initialized at %f.."),
 		*FString(__FUNCTION__), __LINE__, *GetName(), GetWorld()->GetTimeSeconds());
+	
+	if (!worldStateInited) {
+		UE_LOG(LogTemp, Error, TEXT("%s::%d However the WorldStateLogger could not be initialized."),
+			*FString(__FUNCTION__), __LINE__);
+	}
+	if (!symbolicInited) {
+		UE_LOG(LogTemp, Error, TEXT("%s::%d However the SymbolicLogger could not be initialized."),
+			*FString(__FUNCTION__), __LINE__);
+	}
+
 }
 
 // Start logging
