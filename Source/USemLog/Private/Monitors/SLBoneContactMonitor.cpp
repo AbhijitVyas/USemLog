@@ -556,8 +556,8 @@ void USLBoneContactMonitor::OnGraspOverlapEnd(UPrimitiveComponent* OverlappedCom
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s::%d %s->%s is not registered, this should not happen.."),
-			*FString(__FUNCTION__), __LINE__, *GetOwner()->GetName(), *OtherActor->GetName());
+		UE_LOG(LogTemp, Error, TEXT("%s::%d %s->%s is not registered,active contacts: %d this should not happen.."),
+			*FString(__FUNCTION__), __LINE__, *GetOwner()->GetName(), *OtherActor->GetName(), ActiveContacts.Num());
 	}
 
 	if (bVisualDebug)

@@ -952,9 +952,9 @@ void USLManipulatorMonitor::GraspStarted(USLBaseIndividual* OtherIndividual)
 // A grasp has ended
 void USLManipulatorMonitor::GraspEnded(USLBaseIndividual* OtherIndividual)
 {
-	UE_LOG(LogTemp, Error, TEXT("%s::%d \t %.4fs \t\t Grasp Ended called: \t\t %s::%s->%s;"),
+	/*UE_LOG(LogTemp, Error, TEXT("%s::%d \t %.4fs \t\t Grasp Ended called: \t\t %s::%s->%s;"),
 		*FString(__FUNCTION__), __LINE__, GetWorld()->GetTimeSeconds(),
-		*GetOwner()->GetName(), *GetName(), *OtherIndividual->GetParentActor()->GetName());
+		*GetOwner()->GetName(), *GetName(), *OtherIndividual->GetParentActor()->GetName());*/
 
 	if (GraspedIndividuals.Remove(OtherIndividual) > 0)
 	//if (GraspedIndividual != nullptr)
