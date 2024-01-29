@@ -428,6 +428,10 @@ void USLBoneContactMonitor::OnGraspOverlapBegin(UPrimitiveComponent* OverlappedC
 	bool bFromSweep,
 	const FHitResult& SweepResult)
 {
+
+	/*UE_LOG(LogTemp, Error, TEXT("%s::%d %s->%s OverlapBegin"),
+		*FString(__FUNCTION__), __LINE__, *GetOwner()->GetName(), *OtherActor->GetName());*/
+
 	// Ignore self overlaps
 	if (OtherActor == GetOwner())
 	{
@@ -465,8 +469,13 @@ void USLBoneContactMonitor::OnGraspOverlapBegin(UPrimitiveComponent* OverlappedC
 		return;
 	}
 
+	
+
 	// Check if it is a new event, or a concatenation with a previous one, either way, there is a new active contact
 	ActiveContacts.Emplace(OtherIndividual);
+
+	/*UE_LOG(LogTemp, Error, TEXT("%s::%d %s->%s OverlapBegin, Active Contacts: %d"),
+		*FString(__FUNCTION__), __LINE__, *GetOwner()->GetName(), *OtherActor->GetName(), ActiveContacts.Num());*/
 	if(!IsAJitterGrasp(OtherIndividual, GetWorld()->GetTimeSeconds()))
 	{
 		if (bLogGraspDebug)
@@ -533,6 +542,9 @@ void USLBoneContactMonitor::OnGraspOverlapEnd(UPrimitiveComponent* OverlappedCom
 		return;
 	}
 
+	//UE_LOG(LogTemp, Error, TEXT("%s::%d %s->%s Active ContactsCheck %d"),
+	//	*FString(__FUNCTION__), __LINE__, *GetOwner()->GetName(), *OtherActor->GetName(), ActiveContacts.Num());
+	
 	// Check if grasp is registered
 	if (ActiveContacts.Remove(OtherIndividual) > 0)
 	{
@@ -556,8 +568,9 @@ void USLBoneContactMonitor::OnGraspOverlapEnd(UPrimitiveComponent* OverlappedCom
 	}
 	else
 	{
-		UE_LOG(LogTemp, Error, TEXT("%s::%d %s->%s is not registered,active contacts: %d this should not happen.."),
-			*FString(__FUNCTION__), __LINE__, *GetOwner()->GetName(), *OtherActor->GetName(), ActiveContacts.Num());
+		//Why is this called? BIG TODO
+		/*UE_LOG(LogTemp, Error, TEXT("%s::%d %s->%s is not registered,active contacts: %d this should not happen.."),
+			*FString(__FUNCTION__), __LINE__, *GetOwner()->GetName(), *OtherActor->GetName(), ActiveContacts.Num());*/
 	}
 
 	if (bVisualDebug)
