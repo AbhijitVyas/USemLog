@@ -88,8 +88,8 @@ FString FSLCleaningEvent::RESTCallToKnowRob(FSLKRRestClient* InFSLKRRestClient) 
 
 	//---------------------------------------------;
 	//TODO Change to accepted soma type!!
-	FString SubActionType = TEXT("soma:'Cut'");
-	FString TaskType = TEXT("soma:'Cutting'");
+	FString SubActionType = TEXT("soma:'Clean'");
+	FString TaskType = TEXT("soma:'Cleaning'");
 
 	FString AdditionalEventInfo = TEXT("");
 
