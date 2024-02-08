@@ -2,14 +2,14 @@
 // Author: Andrei Haidu (http://haidu.eu)
 
 #include "Editor/SLAssetManager.h"
-#include "ModuleManager.h"
+#include "Modules/ModuleManager.h"
 #include "EngineGlobals.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
 
 #if WITH_EDITOR
 #include "AssetToolsModule.h"
-#include "AssetRegistryModule.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #endif // WITH_EDITOR
 
 // Ctor
@@ -194,6 +194,7 @@ void USLAssetManager::MoveReferencedObjects(FName PackageName, const FString& So
 						continue;
 					}
 
+					//if (SoftAsset.Last().AssetClassPath.ToString().Equals(TEXT("World")))
 					if (SoftAsset.Last().AssetClass.ToString().Equals(TEXT("World")))
 					{
 						AssetsList.Add(SoftAsset.Last());

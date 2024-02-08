@@ -11,8 +11,8 @@
 #include "Engine/GameViewportClient.h"
 #include "HighResScreenshot.h"
 #include "ImageUtils.h"
-#include "Async.h"
-#include "FileHelper.h"
+#include "Async/Async.h"
+#include "Misc/FileHelper.h"
 
 #include "Vision/SLVisionStructs.h"
 //#include "Skeletal/SLSkeletalDataComponent.h"
@@ -168,7 +168,8 @@ void USLVisionOverlapCalc::ScreenshotCB(int32 SizeX, int32 SizeY, const TArray<F
 	{
 		// Compress image
 		TArray<uint8> CompressedBitmap;
-		FImageUtils::CompressImageArray(SizeX, SizeY, Bitmap, CompressedBitmap);
+		//FImageUtils::CompressImageArray(SizeX, SizeY, Bitmap, CompressedBitmap);
+		FImageUtils::ThumbnailCompressImageArray(SizeX, SizeY, Bitmap, CompressedBitmap);
 		FString Path = FPaths::ProjectDir() + "/SemLog/" + SaveLocallyFolderName + "/" + SubFolderName + "/" + CurrImageFilename + ".png";
 		FPaths::RemoveDuplicateSlashes(Path);
 		FFileHelper::SaveArrayToFile(CompressedBitmap, *Path);

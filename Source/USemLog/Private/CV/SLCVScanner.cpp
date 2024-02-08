@@ -11,10 +11,10 @@
 #include "Engine/StaticMeshActor.h"
 #include "Materials/Material.h"
 #include "Materials/MaterialInstanceDynamic.h"
-#include "Async.h"
+#include "Async/Async.h"
 #include "HighResScreenshot.h"
 #include "ImageUtils.h"
-#include "FileHelper.h"
+#include "Misc/FileHelper.h"
 
 #include "Engine.h"
 #include "Engine/PostProcessVolume.h"
@@ -420,12 +420,14 @@ void ASLCVScanner::ScreenshotCapturedCallback(int32 SizeX, int32 SizeY, const TA
 		TArray<FColor> NewImage  = FSLCVUtils::ReplacePixels(InBitmap, FColor::Black, CustomBackgroundColor, CustomBackgroundColorTolerance);
 
 		// Compress the modified image
-		FImageUtils::CompressImageArray(SizeX, SizeY, NewImage, CompressedBitmap);
+		//FImageUtils::CompressImageArray(SizeX, SizeY, NewImage, CompressedBitmap);
+		FImageUtils::ThumbnailCompressImageArray(SizeX, SizeY, NewImage, CompressedBitmap);
 	}
 	else
 	{
 		// Compress the original image
-		FImageUtils::CompressImageArray(SizeX, SizeY, InBitmap, CompressedBitmap);
+		//FImageUtils::CompressImageArray(SizeX, SizeY, InBitmap, CompressedBitmap);
+		FImageUtils::ThumbnailCompressImageArray(SizeX, SizeY, InBitmap, CompressedBitmap);
 	}
 
 	// Check if the image should be stored locally
@@ -940,7 +942,8 @@ void ASLCVScanner::SetRenderParams()
 // Get the individual manager from the world (or spawn a new one)
 bool ASLCVScanner::SetIndividualManager()
 {
-	if (IndividualManager && IndividualManager->IsValidLowLevel() && !IndividualManager->IsPendingKillOrUnreachable())
+	if (IndividualManager && IsValid(IndividualManager) && IsValidChecked(IndividualManager) && !IndividualManager->IsUnreachable())
+	//if (IndividualManager && IndividualManager->IsValidLowLevel() && !IndividualManager->IsPendingKillOrUnreachable())
 	{
 		return true;
 	}
@@ -948,13 +951,15 @@ bool ASLCVScanner::SetIndividualManager()
 	{
 		IndividualManager = ASLIndividualManager::GetExistingOrSpawnNew(GetWorld());
 	}
-	return IndividualManager && IndividualManager->IsValidLowLevel() && !IndividualManager->IsPendingKillOrUnreachable();
+	return IndividualManager && IsValid(IndividualManager) && IsValidChecked(IndividualManager) && !IndividualManager->IsUnreachable();
+	//return IndividualManager && IndividualManager->IsValidLowLevel() && !IndividualManager->IsPendingKillOrUnreachable();
 }
 
 // Get the mongo query manager (used to set up scenes from episodic memories)
 bool ASLCVScanner::SetMongoQueryManager()
 {
-	if (MongoQueryManager && MongoQueryManager->IsValidLowLevel() && !MongoQueryManager->IsPendingKillOrUnreachable())
+	if (MongoQueryManager && IsValid(MongoQueryManager) && IsValidChecked(MongoQueryManager) && !MongoQueryManager->IsUnreachable())
+	//if (MongoQueryManager && MongoQueryManager->IsValidLowLevel() && !MongoQueryManager->IsPendingKillOrUnreachable())
 	{
 		return true;
 	}
@@ -962,7 +967,8 @@ bool ASLCVScanner::SetMongoQueryManager()
 	{
 		MongoQueryManager = ASLMongoQueryManager::GetExistingOrSpawnNew(GetWorld());
 	}
-	return MongoQueryManager && MongoQueryManager->IsValidLowLevel() && !MongoQueryManager->IsPendingKillOrUnreachable();
+	return MongoQueryManager && IsValid(MongoQueryManager) && IsValidChecked(MongoQueryManager) && !MongoQueryManager->IsUnreachable();
+	//return MongoQueryManager && MongoQueryManager->IsValidLowLevel() && !MongoQueryManager->IsPendingKillOrUnreachable();
 }
 
 // Set the individuals to be scanned

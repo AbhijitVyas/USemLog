@@ -4,7 +4,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AssetData.h"
+#include "AssetRegistry/AssetData.h"
 #if SL_WITH_LIBMONGO_C
 	THIRD_PARTY_INCLUDES_START
 	#if PLATFORM_WINDOWS

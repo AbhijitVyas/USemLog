@@ -18,7 +18,8 @@ void USLVizQBase::Execute(ASLKnowrobManager* KRManager)
 		return;
 	}
 
-	if (!KRManager || !KRManager->IsValidLowLevel() || KRManager->IsPendingKillOrUnreachable() || !KRManager->IsInit())
+	if (!KRManager || !IsValid(KRManager) || !IsValidChecked(KRManager) || KRManager->IsUnreachable() || !KRManager->IsInit())
+	//if (!KRManager || !KRManager->IsValidLowLevel() || KRManager->IsPendingKillOrUnreachable() || !KRManager->IsInit())
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s::%d %'s knowrob manager is not valid/init, aborting execution.."),
 			*FString(__FUNCTION__), __LINE__, *GetName());
@@ -73,9 +74,11 @@ void USLVizQBase::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyC
 // Check if the references are set for calling the execute function from the editor
 bool USLVizQBase::IsReadyForManualExecution() const
 {
+	//if (IsValid(KnowrobManager) && IsValidChecked(KnowrobManager) && !KnowrobManager->IsUnreachable())
 	if (KnowrobManager.IsValid() 
 		&& KnowrobManager->IsValidLowLevel() 
 		&& !KnowrobManager->IsPendingKillOrUnreachable())
+		//&& !KnowrobManager->IsUnreachable())
 	{
 
 		/*

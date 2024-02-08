@@ -34,6 +34,7 @@ ASLLoggerManager::ASLLoggerManager()
 	bUseIndependently = false;
 	bLogWorldState = false;
 	bLogActionsAndEvents = false;
+	
 
 #if WITH_EDITORONLY_DATA
 	// Make manager sprite smaller (used to easily find the actor in the world)
@@ -101,6 +102,29 @@ void ASLLoggerManager::BeginPlay()
 			UE_LOG(LogTemp, Error, TEXT("%s::%d Logger (%s) StartImpl() will not be called.."),
 				*FString(__func__), __LINE__, *GetName());
 		}
+
+		// TODO1: move this call to the button pressed event in future
+		// TODO2: for multiple episode logging, one needs to update REST interface methods.
+		// call the NEEM rest API to create a new NEEM Episode
+		if (bCreateNEEM) {
+			// call create an episode once per game, check if it is already created 
+			if (!isEpisodeCreated) {
+				fSLKRRestClient.SendCreateEpisodeRequest();
+				// get system time when game starts
+				//FDateTime timeUtc = FDateTime::UtcNow();
+				//int64 unixStart = timeUtc.ToUnixTimestamp() + timeUtc.GetSecond();
+				//UE_LOG(LogTemp, Display, TEXT("time found: %lld"), unixStart); // log time
+				// the Unix time stamp should be in seconds hence further divide this time by 1000
+				//fSLKRRestClient.SetGameStartUnixTime(unixStart);
+
+				EpisodeIriResponse = fSLKRRestClient.getEpisodeIri();
+				ActionIriResponse = fSLKRRestClient.getActionIri();
+
+				isEpisodeCreated = true;
+			}
+
+		}
+
 	}	
 }
 
@@ -111,7 +135,20 @@ void ASLLoggerManager::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 	if (!bIsFinished)
 	{
+		
+
+		// Finish rest of the methods
 		Finish();
+
+		// first finish the NEEM Episode so that unnecessary tf messages do not get logged.
+		if (isEpisodeCreated) {
+			const TCHAR* Status = EHttpRequestStatus::ToString(fSLKRRestClient.SendFinishEpisodeRequest());
+			UE_LOG(LogTemp, Display, TEXT("Episode finish request response status: %s"), Status);
+		}
+		
+
+
+
 	}
 }
 
@@ -199,6 +236,8 @@ void ASLLoggerManager::Init()
 		}
 	}
 
+	// initialize fSLKRRestClient with URL parameters
+	fSLKRRestClient.Init(*GetKnowRobIpAddress(), *GetKnowRobServerPort(), "", *GetGamePlayerName());
 
 	bIsInit = true;
 	UE_LOG(LogTemp, Log, TEXT("%s::%d Logger manager (%s) succesfully initialized at %f.."),
@@ -274,7 +313,7 @@ void ASLLoggerManager::Finish(bool bForced)
 
 	if (bLogActionsAndEvents)
 	{
-		SymbolicLogger->Finish();
+		SymbolicLogger->Finish(true);
 	}
 
 	bIsStarted = false;
@@ -322,14 +361,16 @@ void ASLLoggerManager::UserInputToggleCallback()
 // Get the reference or spawn a new initialized world state logger
 bool ASLLoggerManager::SetWorldStateLogger()
 {
-	if (WorldStateLogger && WorldStateLogger->IsValidLowLevel() && !WorldStateLogger->IsPendingKillOrUnreachable())
+	if (WorldStateLogger && IsValid(WorldStateLogger) && IsValidChecked(WorldStateLogger) && !WorldStateLogger->IsUnreachable())
+	//if (WorldStateLogger && WorldStateLogger->IsValidLowLevel() && !WorldStateLogger->IsPendingKillOrUnreachable())
 	{
 		return true;
 	}
 
 	for (TActorIterator<ASLWorldStateLogger>Iter(GetWorld()); Iter; ++Iter)
 	{
-		if ((*Iter)->IsValidLowLevel() && !(*Iter)->IsPendingKillOrUnreachable())
+		if (IsValid((*Iter)) && IsValidChecked((*Iter)) && !(*Iter)->IsUnreachable())
+		//if ((*Iter)->IsValidLowLevel() && !(*Iter)->IsPendingKillOrUnreachable())
 		{
 			WorldStateLogger = *Iter;
 			return true;
@@ -349,16 +390,20 @@ bool ASLLoggerManager::SetWorldStateLogger()
 // Get the reference or spawn a new initialized symbolic logger
 bool ASLLoggerManager::SetSymbolicLogger()
 {
-	if (SymbolicLogger && SymbolicLogger->IsValidLowLevel() && !SymbolicLogger->IsPendingKillOrUnreachable())
+	if (SymbolicLogger && IsValid(SymbolicLogger) && IsValidChecked(SymbolicLogger) && !SymbolicLogger->IsUnreachable())
+	//if (SymbolicLogger && SymbolicLogger->IsValidLowLevel() && !SymbolicLogger->IsPendingKillOrUnreachable())
 	{
+		SymbolicLogger->SetSLKRRestClient(&fSLKRRestClient);
 		return true;
 	}
 
 	for (TActorIterator<ASLSymbolicLogger>Iter(GetWorld()); Iter; ++Iter)
 	{
-		if ((*Iter)->IsValidLowLevel() && !(*Iter)->IsPendingKillOrUnreachable())
+		if (IsValid((*Iter)) && IsValidChecked((*Iter)) && !(*Iter)->IsUnreachable())
+		//if ((*Iter)->IsValidLowLevel() && !(*Iter)->IsPendingKillOrUnreachable())
 		{
 			SymbolicLogger = *Iter;
+			SymbolicLogger->SetSLKRRestClient(&fSLKRRestClient);
 			return true;
 		}
 	}
@@ -370,6 +415,8 @@ bool ASLLoggerManager::SetSymbolicLogger()
 #if WITH_EDITOR
 	SymbolicLogger->SetActorLabel(TEXT("SL_SymbolicLogger"));
 #endif // WITH_EDITOR
+
+	SymbolicLogger->SetSLKRRestClient(&fSLKRRestClient);
 	return true;
 }
 

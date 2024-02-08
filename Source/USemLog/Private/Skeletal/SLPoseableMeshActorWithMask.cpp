@@ -15,7 +15,7 @@ ASLPoseableMeshActorWithMask::ASLPoseableMeshActorWithMask()
 	// Create the poseable mesh and set it as root
 	PoseableMeshComponentMask = CreateDefaultSubobject<UPoseableMeshComponent>(TEXT("PoseableMeshComponentMask"));
 	PoseableMeshComponentMask->bPerBoneMotionBlur = false;
-	PoseableMeshComponentMask->bHasMotionBlurVelocityMeshes = false;
+//	PoseableMeshComponentMask->bHasMotionBlurVelocityMeshes = false;
 	PoseableMeshComponentMask->SetVisibility(false);
 	PoseableMeshComponentMask->SetupAttachment(GetRootComponent());
 }
@@ -24,7 +24,8 @@ ASLPoseableMeshActorWithMask::ASLPoseableMeshActorWithMask()
 void ASLPoseableMeshActorWithMask::SetSkeletalMesh(USkeletalMesh* SkelMesh)
 {
 	Super::SetSkeletalMesh(SkelMesh);	
-	PoseableMeshComponentMask->SetSkeletalMesh(SkelMesh);
+	//PoseableMeshComponentMask->SetSkeletalMesh(SkelMesh);
+	PoseableMeshComponentMask->SetSkinnedAssetAndUpdate(SkelMesh);
 }
 
 // Setup the poseable mesh from a skeletal mesh actor
@@ -35,7 +36,8 @@ void ASLPoseableMeshActorWithMask::SetSkeletalMeshAndPose(ASkeletalMeshActor* Sk
 	if (auto* SkelMeshComp = SkelMeshActor->GetSkeletalMeshComponent())
 	{		
 		PoseableMeshComponentMask->SetWorldTransform(SkelMeshComp->GetComponentTransform());
-		PoseableMeshComponentMask->SetSkeletalMesh(SkelMeshComp->SkeletalMesh);
+		//PoseableMeshComponentMask->SetSkeletalMesh(SkelMeshComp->SkeletalMesh);
+		PoseableMeshComponentMask->SetSkinnedAssetAndUpdate(SkelMeshComp->GetSkeletalMeshAsset());
 	}
 }
 

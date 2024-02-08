@@ -114,6 +114,11 @@ void ASLSymbolicLogger::BeginPlay()
 				*FString(__func__), __LINE__, *GetName());
 		}
 	}
+
+	// TODO: use it when we shift NEEM logging with button pressed. 
+	// get system time when game starts
+	/*FDateTime timeUtc = FDateTime::UtcNow();
+	GameStartUnixTime = timeUtc.ToUnixTimestamp() + timeUtc.GetSecond();*/
 }
 
 // Called when actor removed from game or game ended
@@ -410,6 +415,10 @@ void ASLSymbolicLogger::FinishImpl(bool bForced)
 		{
 			Ev->AddToOwlDoc(ExperimentDoc.Get());
 			SubActionIds.Add(Ev->Id);
+
+			// Make rest call to knowrob sending Event as sub Action
+			Ev->RESTCallToKnowRob(fSLKRRestClient);
+			
 		}
 
 		// Add stored unique timepoints to doc
@@ -541,14 +550,16 @@ TSharedPtr<FSLOwlExperiment> ASLSymbolicLogger::CreateEventsDocTemplate(ESLOwlEx
 // Get the reference or spawn a new individual manager
 bool ASLSymbolicLogger::SetIndividualManager()
 {
-	if (IndividualManager && IndividualManager->IsValidLowLevel() && !IndividualManager->IsPendingKillOrUnreachable())
+	if (IndividualManager && IsValid(IndividualManager) && IsValidChecked(IndividualManager) && !IndividualManager->IsUnreachable())
+	//if (IndividualManager && IndividualManager->IsValidLowLevel() && !IndividualManager->IsPendingKillOrUnreachable())
 	{
 		return true;
 	}
 
 	for (TActorIterator<ASLIndividualManager>Iter(GetWorld()); Iter; ++Iter)
 	{
-		if ((*Iter)->IsValidLowLevel() && !(*Iter)->IsPendingKillOrUnreachable())
+		if (IsValid((*Iter)) && IsValidChecked((*Iter)) && !(*Iter)->IsUnreachable())
+		//if ((*Iter)->IsValidLowLevel() && !(*Iter)->IsPendingKillOrUnreachable())
 		{
 			IndividualManager = *Iter;
 			return true;
@@ -568,7 +579,8 @@ bool ASLSymbolicLogger::SetIndividualManager()
 // Helper function which checks if the individual data is loaded
 bool ASLSymbolicLogger::IsValidAndLoaded(AActor* Actor)
 {
-	if (Actor == nullptr || !Actor->IsValidLowLevel() || Actor->IsPendingKillOrUnreachable())
+	if (Actor == nullptr || !IsValid(Actor) || Actor->IsUnreachable() || !IsValidChecked(Actor))
+	//if (Actor == nullptr || !Actor->IsValidLowLevel() || Actor->IsPendingKillOrUnreachable())
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s::%d Actor not valid.."), *FString(__func__), __LINE__);
 		return false;
@@ -837,5 +849,10 @@ void ASLSymbolicLogger::InitROSPublisher()
 	ROSPrologClient->Init(WriterParams.ServerIp, WriterParams.ServerPort);
 	FSLEntitiesManager::GetInstance()->SetPrologClient(ROSPrologClient);
 #endif // SL_WITH_ROSBRIDGE
+}
+
+void ASLSymbolicLogger::SetSLKRRestClient(FSLKRRestClient* InFSLKRRestClient)
+{
+	fSLKRRestClient = InFSLKRRestClient;
 }
 

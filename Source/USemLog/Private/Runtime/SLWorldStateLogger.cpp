@@ -314,14 +314,16 @@ void ASLWorldStateLogger::UserInputToggleCallback()
 // Get the reference or spawn a new individual manager
 bool ASLWorldStateLogger::SetIndividualManager()
 {
-	if (IndividualManager && IndividualManager->IsValidLowLevel() && !IndividualManager->IsPendingKillOrUnreachable())
+	if (IndividualManager && IsValid(IndividualManager) && IsValidChecked(IndividualManager) && !IndividualManager->IsUnreachable())
+	//if (IndividualManager && IndividualManager->IsValidLowLevel() && !IndividualManager->IsPendingKillOrUnreachable())
 	{
 		return true;
 	}
 
 	for (TActorIterator<ASLIndividualManager>Iter(GetWorld()); Iter; ++Iter)
 	{
-		if ((*Iter)->IsValidLowLevel() && !(*Iter)->IsPendingKillOrUnreachable())
+		if (IsValid((*Iter)) && IsValidChecked((*Iter)) && !(*Iter)->IsUnreachable())
+		//if ((*Iter)->IsValidLowLevel() && !(*Iter)->IsPendingKillOrUnreachable())
 		{
 			IndividualManager = *Iter;
 			return true;

@@ -649,7 +649,8 @@ bool USLIndividualComponent::UnBindChildrenDelegates()
 // Check if individual object is valid
 bool USLIndividualComponent::HasValidIndividual() const
 {
-	return IndividualObj && IndividualObj->IsValidLowLevel() && !IndividualObj->IsPendingKill();
+	return IndividualObj && IsValid(IndividualObj) && IsValidChecked(IndividualObj);
+	//return IndividualObj && IndividualObj->IsValidLowLevel() && !IndividualObj->IsPendingKill();
 }
 
 /* Private */

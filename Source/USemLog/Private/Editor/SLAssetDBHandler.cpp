@@ -7,7 +7,7 @@
 #include "Misc/Paths.h"
 
 #if WITH_EDITOR
-#include "AssetRegistryModule.h"
+#include "AssetRegistry/AssetRegistryModule.h"
 #endif // WITH_EDITOR
 
 // Ctor
@@ -449,7 +449,8 @@ void FSLAssetDBHandler::UploadAllFileToGridFS(const FString& Dir)
 		FString ContentDir = FPaths::ProjectContentDir() + Path + TEXT("/");
 
 		FString Id;
-		if (Data.AssetClass.ToString().Equals(TEXT("World")))
+		if (Data.AssetClassPath.ToString().Equals(TEXT("World")))
+		//if (Data.AssetClass.ToString().Equals(TEXT("World")))
 		{
 			UploadFileToGridFS(ContentDir, Data.AssetName.ToString() + TEXT(".umap"), Id);
 		}

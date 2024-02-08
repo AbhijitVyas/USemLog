@@ -258,7 +258,8 @@ USLIndividualInfoComponent* FSLIndividualInfoUtils::AddNewIndividualInfoComponen
 		Actor->GetComponents(PostInstanceComponents);
 		for (UActorComponent* ActorComponent : PostInstanceComponents)
 		{
-			if (!ActorComponent->IsRegistered() && ActorComponent->bAutoRegister && !ActorComponent->IsPendingKill() && !PreInstanceComponents.Contains(ActorComponent))
+			if (!ActorComponent->IsRegistered() && ActorComponent->bAutoRegister && IsValid(ActorComponent) && IsValidChecked(ActorComponent) && !PreInstanceComponents.Contains(ActorComponent))
+			//if (!ActorComponent->IsRegistered() && ActorComponent->bAutoRegister && !ActorComponent->IsPendingKill() && !PreInstanceComponents.Contains(ActorComponent))
 			{
 				ActorComponent->RegisterComponent();
 			}

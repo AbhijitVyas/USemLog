@@ -4,6 +4,7 @@
 #pragma once
 
 #include "SLContactEvent.h"
+#include "SLPouringEvent.h"
 #include "SLSupportedByEvent.h"
 #include "SLReachEvent.h"
 #include "SLGraspEvent.h"

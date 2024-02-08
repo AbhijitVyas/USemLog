@@ -14,8 +14,8 @@
 #include "Engine/GameViewportClient.h"
 #include "HighResScreenshot.h"
 #include "ImageUtils.h"
-#include "Async.h"
-#include "FileHelper.h"
+#include "Async/Async.h"
+#include "Misc/FileHelper.h"
 
 // Constructor
 USLVisionLogger::USLVisionLogger() : bIsInit(false), bIsStarted(false), bIsFinished(false), bIsPaused(false)
@@ -304,7 +304,8 @@ void USLVisionLogger::ScreenshotCB(int32 SizeX, int32 SizeY, const TArray<FColor
 		MaskImgHandler.GetDataAndRestoreImage(BitmapRef, SizeX, SizeY, CurrViewData);
 
 		// Compress the restored bitmap image
-		FImageUtils::CompressImageArray(SizeX, SizeY, BitmapRef, CompressedBitmap);
+		//FImageUtils::CompressImageArray(SizeX, SizeY, BitmapRef, CompressedBitmap);
+		FImageUtils::ThumbnailCompressImageArray(SizeX, SizeY, BitmapRef, CompressedBitmap);
 	
 		if (OverlapCalc)
 		{
@@ -327,7 +328,8 @@ void USLVisionLogger::ScreenshotCB(int32 SizeX, int32 SizeY, const TArray<FColor
 	else
 	{
 		// Compress the original bitmap image
-		FImageUtils::CompressImageArray(SizeX, SizeY, Bitmap, CompressedBitmap);
+		//FImageUtils::CompressImageArray(SizeX, SizeY, Bitmap, CompressedBitmap);
+		FImageUtils::ThumbnailCompressImageArray(SizeX, SizeY, Bitmap, CompressedBitmap);
 	}
 
 	// Check if the image should be saved locally as well

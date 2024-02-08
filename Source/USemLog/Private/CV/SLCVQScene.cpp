@@ -52,7 +52,8 @@ bool USLCVQScene::InitScene(ASLIndividualManager* IndividualManager, ASLMongoQue
 		return false;
 	}
 
-	if (!IndividualManager || !IndividualManager->IsValidLowLevel() || IndividualManager->IsPendingKillOrUnreachable() || !IndividualManager->IsLoaded())
+	if (!IndividualManager || !IsValid(IndividualManager) || !IsValidChecked(IndividualManager) || IndividualManager->IsUnreachable())
+	//if (!IndividualManager || !IndividualManager->IsValidLowLevel() || IndividualManager->IsPendingKillOrUnreachable() || !IndividualManager->IsLoaded())
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s::%d %'s individual manager is not valid/loaded, aborting execution.."),
 			*FString(__FUNCTION__), __LINE__, *GetName());
@@ -414,7 +415,8 @@ void USLCVQScene::PostEditChangeProperty(struct FPropertyChangedEvent& PropertyC
 // Virtual implementation for the scene initialization
 bool USLCVQScene::InitSceneImpl(ASLIndividualManager* IndividualManager, ASLMongoQueryManager* MQManager)
 {
-	if (!MQManager || !MQManager->IsValidLowLevel() || MQManager->IsPendingKillOrUnreachable())
+	if (!MQManager || !IsValid(MQManager) || !IsValidChecked(MQManager) || MQManager->IsUnreachable())
+	//if (!MQManager || !MQManager->IsValidLowLevel() || MQManager->IsPendingKillOrUnreachable())
 	{
 		UE_LOG(LogTemp, Error, TEXT("%s::%d %'s mongo query manager is not valid, aborting execution.."),
 			*FString(__FUNCTION__), __LINE__, *GetName());
@@ -481,7 +483,8 @@ bool USLCVQScene::SetSceneActors(ASLIndividualManager* IndividualManager, ASLMon
 				// Check if the actor already has a clone
 				for (TActorIterator<ASkeletalMeshActor>Iter(IndividualManager->GetWorld()); Iter; ++Iter)
 				{
-					if (!(*Iter)->IsPendingKillOrUnreachable())
+					if (IsValid(MQManager) || IsValidChecked(MQManager) || !(*Iter)->IsUnreachable())
+					//if (!(*Iter)->IsPendingKillOrUnreachable())
 					{
 						if ((*Iter)->GetName().Equals(PoseableActorName)) {
 							continue;
@@ -506,7 +509,8 @@ bool USLCVQScene::SetSceneActors(ASLIndividualManager* IndividualManager, ASLMon
 				//PoseableCloneAct->SetActorHiddenInGame(true);
 
 #if SL_WITH_DEBUG && ENABLE_DRAW_DEBUG
-				if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
+				if (ActiveWorld && IsValid(ActiveWorld) && IsValidChecked(ActiveWorld) && !ActiveWorld->IsUnreachable())
+				//if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
 				{
 					// Sem map location
 					// Orig
@@ -705,7 +709,8 @@ FVector USLCVQScene::DummyCalcSceneOriginRed()
 		FBoxSphereBounds PoseableMBounds = PoseableMeshComp->Bounds;
 
 #if SL_WITH_DEBUG && ENABLE_DRAW_DEBUG
-		if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
+		if (ActiveWorld && IsValid(ActiveWorld) && IsValidChecked(ActiveWorld) && !ActiveWorld->IsUnreachable())
+		//if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
 		{
 			// Clone
 			for (int32 BIdx = 0; BIdx < PoseableMeshComp->GetNumBones(); BIdx++)
@@ -732,7 +737,8 @@ FVector USLCVQScene::DummyCalcSceneOriginRed()
 	}
 
 #if SL_WITH_DEBUG && ENABLE_DRAW_DEBUG
-	if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
+	if (ActiveWorld && IsValid(ActiveWorld) && IsValidChecked(ActiveWorld) && !ActiveWorld->IsUnreachable())
+	//if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
 	{
 		DrawDebugSphere(ActiveWorld, SphereBounds.Origin, SphereBounds.SphereRadius, 32, FColor::Red, true);
 		DrawDebugSphere(ActiveWorld, SphereBounds.Origin, 3.f, 16, FColor::Red, true);
@@ -784,7 +790,8 @@ FVector USLCVQScene::DummyCalcSceneOriginYellow()
 		FBoxSphereBounds PoseableMBounds = PoseableMeshComp->Bounds;
 
 #if SL_WITH_DEBUG && ENABLE_DRAW_DEBUG
-		if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
+		if (ActiveWorld && IsValid(ActiveWorld) && IsValidChecked(ActiveWorld) && !ActiveWorld->IsUnreachable())
+		//if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
 		{
 			// Clone
 			for (int32 BIdx = 0; BIdx < PoseableMeshComp->GetNumBones(); BIdx++)
@@ -811,7 +818,8 @@ FVector USLCVQScene::DummyCalcSceneOriginYellow()
 	}
 
 #if SL_WITH_DEBUG && ENABLE_DRAW_DEBUG
-	if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
+	if (ActiveWorld && IsValid(ActiveWorld) && IsValidChecked(ActiveWorld) && !ActiveWorld->IsUnreachable())
+	//if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
 	{
 		DrawDebugSphere(ActiveWorld, SphereBounds.Origin, SphereBounds.SphereRadius, 32, FColor::Yellow, true);
 		DrawDebugSphere(ActiveWorld, SphereBounds.Origin, 3.f, 16, FColor::Yellow, true);
@@ -863,7 +871,8 @@ FVector USLCVQScene::DummyCalcSceneOriginGreen()
 		FBoxSphereBounds PoseableMBounds = PoseableMeshComp->Bounds;
 
 #if SL_WITH_DEBUG && ENABLE_DRAW_DEBUG
-		if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
+		if (ActiveWorld && IsValid(ActiveWorld) && IsValidChecked(ActiveWorld) && !ActiveWorld->IsUnreachable())
+		//if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
 		{
 			// Clone
 			for (int32 BIdx = 0; BIdx < PoseableMeshComp->GetNumBones(); BIdx++)
@@ -890,7 +899,8 @@ FVector USLCVQScene::DummyCalcSceneOriginGreen()
 	}
 
 #if SL_WITH_DEBUG && ENABLE_DRAW_DEBUG
-	if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
+	if (ActiveWorld && IsValid(ActiveWorld) && IsValidChecked(ActiveWorld) && !ActiveWorld->IsUnreachable())
+	//if (ActiveWorld && !ActiveWorld->IsPendingKillOrUnreachable())
 	{
 		DrawDebugSphere(ActiveWorld, SphereBounds.Origin, SphereBounds.SphereRadius, 32, FColor::Green, true);
 		DrawDebugSphere(ActiveWorld, SphereBounds.Origin, 3.f, 16, FColor::Green, true);

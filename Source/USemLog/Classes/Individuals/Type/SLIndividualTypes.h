@@ -27,3 +27,5 @@
 #include "Individuals/Type/SLVirtualViewIndividual.h"
 #include "Individuals/Type/SLVirtualGazeOriginIndividual.h"
 #include "Individuals/Type/SLVirtualGazeTargetIndividual.h"
+#include "Individuals/Type/SLParticleIndividual.h"
+#include "Individuals/Type/SLCustomStaticMeshComponentIndividual.h"

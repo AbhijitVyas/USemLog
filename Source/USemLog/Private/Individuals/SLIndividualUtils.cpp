@@ -6,7 +6,7 @@
 #include "Individuals/Type/SLIndividualTypes.h"
 
 #include "Skeletal/SLSkeletalDataAsset.h"
-#include "AssetRegistryModule.h" // FindSkeletalDataAsset
+#include "AssetRegistry/AssetRegistryModule.h" // FindSkeletalDataAsset
 #include "EngineUtils.h"
 
 #include "Engine/StaticMeshActor.h"
@@ -29,6 +29,8 @@
 
 #include "Gaze/SLGazeTargetActor.h"
 #include "Gaze/SLGazeOriginActor.h"
+#include "Actors/SLPouringParticleAgentClass.h"
+#include "Actors/SLStaticMeshAgentClass.h"
 
 #if WITH_EDITOR
 #include "Kismet2/ComponentEditorUtils.h" // GenerateValidVariableName
@@ -584,6 +586,14 @@ USLBaseIndividual* FSLIndividualUtils::CreateIndividualObject(UObject* Outer, AA
 	{
 		return NewObject<USLBaseIndividual>(Outer, USLSkyIndividual::StaticClass());
 	}
+	else if (Owner->IsA(ASLPouringParticleAgentClass::StaticClass()) || Owner->IsA(ASLPouringParticleAgentClass::StaticClass()))
+	{
+		return NewObject<USLParticleIndividual>(Outer, USLParticleIndividual::StaticClass());
+	}
+	else if (Owner->IsA(ASLStaticMeshAgentClass::StaticClass()) || Owner->IsA(ASLStaticMeshAgentClass::StaticClass()))
+	{
+		return NewObject<USLCustomStaticMeshComponentIndividual>(Outer, USLCustomStaticMeshComponentIndividual::StaticClass());
+	}
 	//else if (Owner->IsA(AAtmosphericFog::StaticClass()) || Owner->GetName().Contains("SkySphere"))
 	//{
 	//	return NewObject<USLBaseIndividual>(Outer, USLSkyIndividual::StaticClass());
@@ -667,16 +677,17 @@ USLSkeletalDataAsset* FSLIndividualUtils::FindSkeletalDataAsset(AActor* Owner)
 			TArray<FAssetData> AssetData;
 			FARFilter Filter;
 			Filter.PackagePaths.Add("/USemLog/Skeletal");
-			Filter.ClassNames.Add(USLSkeletalDataAsset::StaticClass()->GetFName());
+			//Filter.ClassNames.Add(USLSkeletalDataAsset::StaticClass()->GetFName());
+			Filter.ClassPaths.Add(FTopLevelAssetPath(USLSkeletalDataAsset::StaticClass()));
 			AssetRegistryModule.Get().GetAssets(Filter, AssetData);
-
+			
 			// Search for the results
 			for (const auto& AD : AssetData)
 			{
-				//if (AD.AssetName.ToString().Contains(SkelAssetName))
-				//{
-				//	return Cast<USLSkeletalDataAsset>(AD.GetAsset());
-				//}
+				/*if (AD.AssetName.ToString().Contains(SkelAssetName))
+				{
+					return Cast<USLSkeletalDataAsset>(AD.GetAsset());
+				}*/
 				if (AD.AssetName.ToString().EndsWith(SkelAssetName))
 				{
 					return Cast<USLSkeletalDataAsset>(AD.GetAsset());
@@ -724,7 +735,8 @@ USLIndividualComponent* FSLIndividualUtils::AddNewIndividualComponent(AActor* Ac
 		Actor->GetComponents(PostInstanceComponents);
 		for (UActorComponent* ActorComponent : PostInstanceComponents)
 		{
-			if (!ActorComponent->IsRegistered() && ActorComponent->bAutoRegister && !ActorComponent->IsPendingKill() && !PreInstanceComponents.Contains(ActorComponent))
+			if (!ActorComponent->IsRegistered() && ActorComponent->bAutoRegister && IsValid(ActorComponent) && IsValidChecked(ActorComponent) && !PreInstanceComponents.Contains(ActorComponent))
+			//if (!ActorComponent->IsRegistered() && ActorComponent->bAutoRegister && !ActorComponent->IsPendingKill() && !PreInstanceComponents.Contains(ActorComponent))
 			{
 				ActorComponent->RegisterComponent();
 			}
@@ -770,6 +782,8 @@ bool FSLIndividualUtils::CanHaveIndividualComponent(AActor* Actor)
 		|| Actor->IsA(ALight::StaticClass())
 		|| Actor->IsA(ASkyLight::StaticClass())
 		|| Actor->IsA(ASLVirtualCameraView::StaticClass())
+		|| Actor->IsA(ASLPouringParticleAgentClass::StaticClass())
+		|| Actor->IsA(ASLStaticMeshAgentClass::StaticClass())
 		|| Actor->GetName().Contains("SkySphere");
 }
 

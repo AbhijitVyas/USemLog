@@ -3,7 +3,7 @@
 
 #include "SLEdUtils.h"
 #include "EngineUtils.h"
-#include "AssetRegistryModule.h" // material search for InstancedStaticMesh
+#include "AssetRegistry/AssetRegistryModule.h" // material search for InstancedStaticMesh
 
 // SL
 #include "Editor/SLSemanticMapWriter.h"
@@ -295,7 +295,8 @@ void FSLEdUtils::EnableAllMaterialsForInstancedStaticMesh()
 
 	for (FAssetData Data : AllAsset)
 	{
-		if (Data.AssetClass.ToString().Equals(TEXT("Material")))
+		if (Data.AssetClassPath.GetAssetName().ToString().Equals(TEXT("Material")))
+		//if (Data.AssetClass.ToString().Equals(TEXT("Material")))
 		{
 			UMaterial* Material = Cast<UMaterial>(Data.GetAsset());
 			if (!Material->bUsedWithInstancedStaticMeshes)
