@@ -94,9 +94,9 @@ FString FSLContactEvent::RESTCallToKnowRob(FSLKRRestClient* InFSLKRRestClient) c
 	// TODO: create new concept called Touching in SOMA task branch
 	FString TaskType = TEXT("soma:'InContact'");
 
-	 
-	/*InFSLKRRestClient->SendCreateSubActionRequest(SubActionType, TaskType,
-		ObjectsPartcipated, AdditionalEventInfo, double(StartTime), double(EndTime));*/
+	FString AdditionalEventInfo = TEXT("");
+	InFSLKRRestClient->SendCreateSubActionRequest(SubActionType, TaskType,
+		ObjectsPartcipated, AdditionalEventInfo, double(StartTime), double(EndTime));
 
 	return TEXT("Succeed!");
 }
