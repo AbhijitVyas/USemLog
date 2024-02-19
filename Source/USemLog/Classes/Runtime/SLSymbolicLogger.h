@@ -170,6 +170,10 @@ private:
 	UPROPERTY(VisibleAnywhere, Transient, Category = "Semantic Logger")
 	ASLIndividualManager* IndividualManager;
 
+	// Logger start parameters
+	UPROPERTY(EditAnywhere, Category = "Semantic Logger")
+	bool bLogToScreen;
+
 
 	// Array of finished events
 	TArray<TSharedPtr<ISLEvent>> FinishedEvents;

@@ -499,9 +499,11 @@ void ASLSymbolicLogger::UserInputToggleCallback()
 // Called when a semantic event is done
 void ASLSymbolicLogger::SemanticEventFinishedCallback(TSharedPtr<ISLEvent> Event)
 {
+	if (bLogToScreen){
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Yellow, FString::Printf(TEXT("%s::%d %s"), *FString(__func__), __LINE__, *Event->ToString()));
 	//UE_LOG(LogTemp,Error , TEXT("%s::%d %s"), *FString(__func__), __LINE__, *Event->ToString());
 	//UE_LOG(LogTemp, Error, TEXT(">> %s::%d %s"), *FString(__func__), __LINE__, *Event->ToString());
+	}
 	FinishedEvents.Add(Event);
 
 #if SL_WITH_ROSBRIDGE
