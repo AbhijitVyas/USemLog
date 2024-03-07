@@ -17,29 +17,18 @@ FSLKRRestClient::~FSLKRRestClient()
 
 void FSLKRRestClient::Init(const FString& InHost, const FString& InPort, const FString& InProtocol, const FString& GameUser) {
 
-    //URL = TEXT("172.31.115.208:62226/knowrob/api/v1.0/query");
     URL = InHost + TEXT(":") + InPort + TEXT("/knowrob/api/v1.0/");
-
     GameParticipant = GameUser;
-    
     IsConnected();
 
 }
-//\"query\": \"true\",
+
 bool FSLKRRestClient::IsConnected() {
-    //SendRequest(TEXT("{ \"query\": \"A=2.\", \"maxSolutionCount\" : 1}"));
     return true;
 }
 
 void FSLKRRestClient::OnResponseReceived(FHttpRequestPtr Request, FHttpResponsePtr Response, bool bConnectedSuccessfully)
 {
-    /*
-    TSharedPtr<FJsonObject> ResponseObj;
-    TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(Response->GetContentAsString());
-    FJsonSerializer::Deserialize(Reader, ResponseObj);
-
-    UE_LOG(LogTemp, Display, TEXT("Response %s"), *Response->GetContentAsString());*/
-    //UE_LOG(LogTemp, Display, TEXT("Title: %s"), *ResponseObj->GetStringField("title"));
 }
 
 FString FSLKRRestClient::getEpisodeIri() {
@@ -63,10 +52,14 @@ bool FSLKRRestClient::SendCreateEpisodeRequest() {
     Request->SetVerb((TEXT("POST")));
     Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 
-    
+    // get system time when game starts and send it to rest call for episode start
+    FDateTime timeUtc = FDateTime::UtcNow();
+    int64 GameStartTime = timeUtc.ToUnixTimestamp();
+    UE_LOG(LogTemp, Display, TEXT("Game Start unix time without utc: %lld"), GameStartTime); // log time
+    // store start time for later use with logging of sub actions
+    SetGameStartUnixTime(GameStartTime);
 
-    
-    FString Query = FString::Printf(TEXT("{ \"game_participant\": \"%s\"}"), *GameParticipant);
+    FString Query = FString::Printf(TEXT("{ \"game_participant\": \"%s\", \"game_start_time\": \"%lf\"}"), *GameParticipant, double(GameStartTime));
     Request->SetContentAsString(*Query);
     Request->OnProcessRequestComplete().BindLambda(
         // Here, we "capture" the 'this' pointer (the "&"), so our lambda can call this
@@ -98,14 +91,6 @@ bool FSLKRRestClient::SendCreateEpisodeRequest() {
                             //Get the value of the json object by field name
                             ActionIri = JsonObject->GetStringField("Action");
                             EpisodeIri = JsonObject->GetStringField("Episode");
-
-                            // Right now we are getting GameStartTime from KnowRob(linux side), 
-                            // if the tfs are missmatched then sync both PC times 
-                            GameStartUnixTime = double(JsonObject->GetNumberField("Time"));
-                            UE_LOG(LogTemp, Display, TEXT("game start time: %lf"), GameStartUnixTime); // log time
-
-                            //UE_LOG(LogTemp, Display, TEXT("ActionIri found: %s"), *ActionIri); // log actor as string
-                            //UE_LOG(LogTemp, Display, TEXT("EpisodeIri found: %s"), *EpisodeIri); // log actor as string
                         }
                     }
                 }
@@ -134,12 +119,14 @@ EHttpRequestStatus::Type FSLKRRestClient::SendFinishEpisodeRequest() {
     Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
     // get system time when game ends and send it via rest api
     FDateTime timeUtc = FDateTime::UtcNow();
-    GameStopUnixTime = timeUtc.ToUnixTimestamp() + timeUtc.GetSecond();
+    int64 GameStopTime = timeUtc.ToUnixTimestamp();
+
+    GameStopUnixTime = double(GameStopTime);
     if (GameStopUnixTime < GameStartUnixTime) {
         UE_LOG(LogTemp, Error, TEXT("Game End Time: %lf can not be less than Start Time: %lf"), double(GameStopUnixTime), double(GameStartUnixTime)); // log time
     }
     UE_LOG(LogTemp, Display, TEXT("game end time: %lld"), GameStopUnixTime); // log time
-    FString Query = FString::Printf(TEXT("{ \"episode_iri\": \"%s\", \"game_end_time\": \"%lf\"}"), *EpisodeIri, double(GameStopUnixTime));
+    FString Query = FString::Printf(TEXT("{ \"episode_iri\": \"%s\", \"game_end_time\": \"%lf\"}"), *EpisodeIri, GameStopUnixTime);
     Request->SetContentAsString(*Query);
     Request->ProcessRequest();
     EHttpRequestStatus::Type Status = Request->GetStatus();
@@ -156,11 +143,11 @@ void FSLKRRestClient::SendCreateSubActionRequest(FString SubActionType, FString 
     Request->SetVerb((TEXT("POST")));
     Request->SetHeader(TEXT("Content-Type"), TEXT("application/json"));
 
-    // TODO: When we shift for NEEM logging with button pressed, change StartTime and EndTime accordingly.
-    // NewStartTime = StartTime - (ButtonPressedTime - GameStartTime)
-    // NewEndTime = EndTime - (ButtonPressedTime - GameStartTime)
+    // adjust start and stop time for sub action with game start in unix format
     double  EventStartTime = GetGameStartUnixTime() + StartTime;
     double  EventEndTime = GetGameStartUnixTime() + EndTime;
+
+    UE_LOG(LogTemp, Display, TEXT("Sub Event %s with start time : %lld and stop time: %lld"), *SubActionType, EventStartTime, EventEndTime); // log time
 
     FString Query = FString::Printf(TEXT("{ \"parent_action_iri\": \"%s\", \"sub_action_type\": \"%s\", \"task_type\": \"%s\", \"start_time\": \"%lf\", \"end_time\": \"%lf\", \"objects_participated\": \"%s\", \"additional_event_info\": \"%s\", \"game_participant\": \"%s\"}"),
         *ActionIri, *SubActionType, *TaskType, EventStartTime, EventEndTime, *ObjectsPartcipated, *AdditionalEventInfo, *GameParticipant);
@@ -231,25 +218,7 @@ void FSLKRRestClient::SendRequest(FString RequestContent) {
 }
 
 void FSLKRRestClient::ProcessKnowrobResponse(const FString& ResponseContent) {
-    // Validate http called us back on the Game Thread...
-    /*
-    check(IsInGameThread());
-
-    TSharedRef<TJsonReader<TCHAR>> JsonReader = TJsonReaderFactory<TCHAR>::Create(ResponseContent);
-    TArray<TSharedPtr<FJsonValue>> OutArray;
-    TSharedPtr<FJsonObject> OutObject;
-    FJsonSerializer::Deserialize(JsonReader, OutObject);
-
     
-    //*OutObject->GetStringField(TEXT("query")
-    TArray<TSharedPtr<FJsonValue>> ResponesArray =  OutObject->GetArrayField(TEXT("response"));
-    UE_LOG(LogTemp, Warning, TEXT("Length: %d"), ResponesArray.Num());
-    for (TSharedPtr<FJsonValue> elem : ResponesArray) {
-        TSharedPtr<FJsonObject> obj = elem->AsObject();
-        UE_LOG(LogTemp, Warning, TEXT("answere: %s"), *obj->GetStringField(TEXT("A")));
-        //UE_LOG(LogTemp, Warning, TEXT("query response: %s"), elem->AsObject());
-       
-    }*/
 }
 
 double FSLKRRestClient::GetGameStartUnixTime() {

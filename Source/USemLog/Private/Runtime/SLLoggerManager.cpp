@@ -253,25 +253,17 @@ void ASLLoggerManager::Start()
 			IC->BindAction(StartParams.UserInputAudioStopActionName, IE_Pressed, this, &ASLLoggerManager::AudioStop);
 			//IC->BindAction(StartParams.UserInputAudioActionName, IE_Pressed, this, &ASLLoggerManager::UserInputToggleCallback);
 
-			
-
 		}
 	}
 
-	// TODO: remoev this code when in VR mode. call the NEEM rest API to create a new NEEM Episode
+	// Call the NEEM rest API to create a new NEEM Episode
 	if (bCreateNEEM) {
 		// call create an episode once per game, check if it is already created 
 		if (!isEpisodeCreated) {
 			UE_LOG(LogTemp, Warning, TEXT("NEEM RECORDING STARTED!!!"));
+			
 			fSLKRRestClient.SendCreateEpisodeRequest();
-
-			// get system time when game starts
-			//FDateTime timeUtc = FDateTime::UtcNow();
-			//int64 unixStart = timeUtc.ToUnixTimestamp() + timeUtc.GetSecond();
-			//UE_LOG(LogTemp, Display, TEXT("time found: %lld"), unixStart); // log time
-			// the Unix time stamp should be in seconds hence further divide this time by 1000
-			//fSLKRRestClient.SetGameStartUnixTime(unixStart);
-
+			
 			EpisodeIriResponse = fSLKRRestClient.getEpisodeIri();
 			ActionIriResponse = fSLKRRestClient.getActionIri();
 
@@ -336,12 +328,12 @@ void ASLLoggerManager::AudioStart()
 		// call create an episode once per game, check if it is already created 
 		if (!isEpisodeCreated) {
 			UE_LOG(LogTemp, Warning, TEXT("NEEM RECORDING STARTED!!!"));
-			fSLKRRestClient.SendCreateEpisodeRequest();
 
 			// get system time when game starts
-			//FDateTime timeUtc = FDateTime::UtcNow();
-			//int64 unixStart = timeUtc.ToUnixTimestamp() + timeUtc.GetSecond();
-			//UE_LOG(LogTemp, Display, TEXT("time found: %lld"), unixStart); // log time
+			FDateTime timeUtc = FDateTime::UtcNow();
+			int64 unixStart = timeUtc.ToUnixTimestamp();
+			UE_LOG(LogTemp, Display, TEXT("Game Start unix time with utc: %lld"), unixStart + timeUtc.GetSecond()); // log time
+			UE_LOG(LogTemp, Display, TEXT("Game Start unix time without utc: %lld"), unixStart); // log time
 			// the Unix time stamp should be in seconds hence further divide this time by 1000
 			//fSLKRRestClient.SetGameStartUnixTime(unixStart);
 

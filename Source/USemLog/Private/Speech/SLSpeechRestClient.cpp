@@ -150,14 +150,6 @@ EHttpRequestStatus::Type FSLSpeechRestClient::SendStopAudioRequest() {
                     }
                     else {
                         if (JsonObject != NULL) {
-                            //Get the value of the json object by field name
-                            //ActionIri = JsonObject->GetStringField("Action");
-                            //EpisodeIri = JsonObject->GetStringField("Episode");
-                            
-                            //FString message = JsonObject->GetStringField("transcription");
-                            //UE_LOG(LogTemp, Warning, TEXT("JSON Content Received : %s"),*message);
-                            //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Transcription: %s"), *message));
-                            //Transcription = message;
 
                             FString message1;
                             const TArray<TSharedPtr<FJsonValue>> m1=  JsonObject->GetArrayField("transcription");
@@ -184,29 +176,6 @@ EHttpRequestStatus::Type FSLSpeechRestClient::SendStopAudioRequest() {
                             Transcription = message1;
                             Total.Add(TEXT("Transcription"), contentlist);
 
-                            //Printing The Contents in Total Variable
-                            //for (const TPair<FString, TArray<TMap<FString, FString>>>& trans : Total)
-                            //{
-                            //    FString key = trans.Key;
-                            //    TArray<TMap<FString, FString>> v1 = trans.Value;
-                            //    for (int32 index = 0; index < v1.Num(); index++)
-                            //    {
-                            //        for (const TPair<FString, FString>& trans2 : v1[index])
-                            //        {
-                            //            GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Transcription FOUND: %s : %s"), *trans2.Key, *trans2.Value));
-                            //            //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Transcription FOUND: %s"), ));
-                            //        }
-                            //    }
-                            //}
-                                         
-                            
-                            // Right now we are getting GameStartTime from KnowRob(linux side), 
-                            // if the tfs are missmatched then sync both PC times 
-                            //GameStartUnixTime = double(JsonObject->GetNumberField("Time"));
-                            //UE_LOG(LogTemp, Display, TEXT("game start time: %lf"), GameStartUnixTime); // log time
-
-                            //UE_LOG(LogTemp, Display, TEXT("ActionIri found: %s"), *ActionIri); // log actor as string
-                            //UE_LOG(LogTemp, Display, TEXT("EpisodeIri found: %s"), *EpisodeIri); // log actor as string
                         }
                     }
                 }
